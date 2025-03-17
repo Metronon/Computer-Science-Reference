@@ -1,0 +1,2852 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>운영체제 학습 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                    }
+                }
+            }
+        }
+        
+        // 다크 모드 감지 및 적용
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // 테마 전환 함수
+        function toggleDarkMode() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
+            }
+        }
+
+        // 스크롤 이동 함수
+        function scrollToSection(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                window.scrollTo({
+                    top: element.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        pre {
+            overflow-x: auto;
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .dark pre {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+        }
+
+        .code-block {
+            background-color: #f8f8f8;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        
+        .dark .code-block {
+            background-color: #2d2d2d;
+            color: #e6e6e6;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .diagram {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .content-container {
+                padding: 1rem;
+            }
+        }
+        
+        .dark .hover-card:hover {
+            background-color: #2d2d2d;
+        }
+        
+        .hover-card:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-200">
+    <!-- 네비게이션 바 -->
+    <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-primary">CS 지식 탐구</h1>
+                </div>
+                <nav class="flex items-center space-x-6">
+                    <a href="메인 페이지.html" class="font-medium hover:text-primary transition-colors">홈</a>
+                    <a href="자료구조.html" class="font-medium hover:text-primary transition-colors">자료구조</a>
+                    <a href="네트워크.html" class="font-medium hover:text-primary transition-colors">네트워크</a>
+                    <a href="운영체제.html" class="font-medium hover:text-primary transition-colors text-primary">운영체제</a>
+                    <a href="DB.html" class="font-medium hover:text-primary transition-colors">DB</a>
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                        </svg>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+        
+    <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row">
+        <!-- 사이드바 내비게이션 -->
+        <aside class="w-full md:w-64 mb-8 md:mb-0 md:mr-8">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-5 sticky top-24">
+                <h2 class="text-lg font-bold mb-4 text-primary">운영체제</h2>
+                <nav class="space-y-2">
+                    <a href="#intro" onclick="scrollToSection('intro')" class="block hover:text-primary transition">
+                        운영체제 소개
+                    </a>
+                    <a href="#process" onclick="scrollToSection('process')" class="block hover:text-primary transition">
+                        프로세스 관리
+                    </a>
+                    <a href="#memory" onclick="scrollToSection('memory')" class="block hover:text-primary transition">
+                        메모리 관리
+                    </a>
+                    <a href="#file" onclick="scrollToSection('file')" class="block hover:text-primary transition">
+                        파일 시스템
+                    </a>
+                    <a href="#io" onclick="scrollToSection('io')" class="block hover:text-primary transition">
+                        입출력 관리
+                    </a>
+                    <a href="#scheduling" onclick="scrollToSection('scheduling')" class="block hover:text-primary transition">
+                        CPU 스케줄링
+                    </a>
+                    <a href="#deadlock" onclick="scrollToSection('deadlock')" class="block hover:text-primary transition">
+                        교착상태
+                    </a>
+                    <a href="#virtual" onclick="scrollToSection('virtual')" class="block hover:text-primary transition">
+                        가상화
+                    </a>
+                    <a href="#distributed" onclick="scrollToSection('distributed')" class="block hover:text-primary transition">
+                        분산 시스템
+                    </a>
+                    <a href="#security" onclick="scrollToSection('security')" class="block hover:text-primary transition">
+                        보안과 보호
+                    </a>
+                </nav>
+            </div>
+        </aside>
+            
+            <!-- 메인 콘텐츠 -->
+        <main class="flex-1">
+            <h1 class="text-3xl font-bold mb-8 text-primary">프로그래밍 운영체제</h1>
+            
+                <!-- 운영체제 소개 -->
+                <section id="intro" class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300 dark:border-gray-700 text-primary">운영체제 소개</h2>
+                    <p class="mb-4">운영체제(Operating System, OS)는 컴퓨터 하드웨어를 관리하고, 응용 프로그램과 하드웨어 사이의 중개자 역할을 하는 시스템 소프트웨어입니다. 사용자와 컴퓨터 하드웨어 사이의 인터페이스를 제공하며, 컴퓨터 시스템의 효율적인 운영을 담당합니다.</p>
+                    
+                    <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-6">
+                        <h3 class="text-xl font-semibold mb-2">운영체제의 주요 목적:</h3>
+                        <ul class="list-disc pl-6 space-y-1">
+                            <li>하드웨어 자원 관리 및 할당</li>
+                            <li>프로그램 실행 환경 제공</li>
+                            <li>시스템의 안정성과 보안성 유지</li>
+                            <li>사용자 인터페이스 제공</li>
+                            <li>시스템 성능 최적화</li>
+                        </ul>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold mb-3">운영체제의 종류</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md hover-card transition">
+                            <h4 class="font-semibold text-lg mb-2 text-primary">단일 사용자 OS</h4>
+                            <p>한 명의 사용자만 시스템을 사용할 수 있는 운영체제 (예: MS-DOS)</p>
+                        </div>
+                        
+                        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md hover-card transition">
+                            <h4 class="font-semibold text-lg mb-2 text-primary">다중 사용자 OS</h4>
+                            <p>여러 사용자가 동시에 사용할 수 있는 운영체제 (예: UNIX, Linux)</p>
+                        </div>
+                        
+                        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md hover-card transition">
+                            <h4 class="font-semibold text-lg mb-2 text-primary">실시간 OS</h4>
+                            <p>정해진 시간 내에 작업 처리를 보장하는 운영체제 (예: RTOS)</p>
+                        </div>
+                        
+                        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md hover-card transition">
+                            <h4 class="font-semibold text-lg mb-2 text-primary">분산 OS</h4>
+                            <p>여러 컴퓨터에 분산된 자원을 관리하는 운영체제</p>
+                        </div>
+                        
+                        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md hover-card transition">
+                            <h4 class="font-semibold text-lg mb-2 text-primary">네트워크 OS</h4>
+                            <p>네트워크를 통한 자원 공유에 중점을 둔 운영체제</p>
+                        </div>
+                        
+                        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md hover-card transition">
+                            <h4 class="font-semibold text-lg mb-2 text-primary">모바일 OS</h4>
+                            <p>스마트폰, 태블릿과 같은 모바일 기기를 위한 운영체제 (예: Android, iOS)</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 프로세스 관리 -->
+                <section id="process" class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300 dark:border-gray-700 text-primary">프로세스 관리</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-semibold mb-3">정의</h3>
+                        <p class="mb-4">프로세스는 실행 중인 프로그램의 인스턴스로, 운영체제에서 자원을 할당받는 작업의 단위입니다. 프로세스 관리는 프로세스의 생성, 실행, 중단, 재개, 종료 및 프로세스 간 통신을 관리하는 운영체제의 핵심 기능입니다.</p>
+                    </div>
+                    
+                    <div class="diagram mb-6">
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md inline-block">
+                            <h4 class="text-center mb-3 font-semibold">프로세스 상태 다이어그램</h4>
+                            <div class="flex flex-wrap justify-center gap-3 items-center">
+                                <div class="p-2 rounded-lg bg-blue-100 dark:bg-blue-900">생성</div>
+                                <div class="transform rotate-90 md:rotate-0">→</div>
+                                <div class="p-2 rounded-lg bg-green-100 dark:bg-green-900">준비</div>
+                                <div class="transform rotate-90 md:rotate-0">↔</div>
+                                <div class="p-2 rounded-lg bg-yellow-100 dark:bg-yellow-900">실행</div>
+                                <div class="transform rotate-90 md:rotate-0">↔</div>
+                                <div class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900">대기</div>
+                                <div class="transform rotate-90 md:rotate-0">→</div>
+                                <div class="p-2 rounded-lg bg-red-100 dark:bg-red-900">종료</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">프로세스 구성 요소</h3>
+                        <div class="table-container">
+                            <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
+                                <thead class="bg-gray-200 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="py-2 px-4 text-left">구성 요소</th>
+                                        <th class="py-2 px-4 text-left">설명</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">프로세스 ID (PID)</td>
+                                        <td class="py-2 px-4">프로세스를 식별하는 고유 번호</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">프로그램 카운터</td>
+                                        <td class="py-2 px-4">다음에 실행할 명령어의 주소</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">레지스터</td>
+                                        <td class="py-2 px-4">프로세스 실행 상태 정보</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">스택</td>
+                                        <td class="py-2 px-4">임시 데이터 저장 (함수 호출, 로컬 변수 등)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-4 font-medium">힙</td>
+                                        <td class="py-2 px-4">동적으로 할당된 메모리</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">스레드</h3>
+                        <p class="mb-4">스레드는 프로세스 내에서 실행되는 작업의 단위로, 같은 프로세스 내의 스레드들은 코드, 데이터, 파일 등의 자원을 공유합니다.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2 text-primary">장점</h4>
+                                <ul class="list-disc pl-6 space-y-1">
+                                    <li>자원 공유로 효율적인 메모리 사용</li>
+                                    <li>생성 및 컨텍스트 전환 비용이 적음</li>
+                                    <li>병렬 처리로 응답성 향상</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2 text-primary">단점</h4>
+                                <ul class="list-disc pl-6 space-y-1">
+                                    <li>동기화 문제 발생 가능</li>
+                                    <li>디버깅이 어려움</li>
+                                    <li>한 스레드 오류가 전체 프로세스에 영향</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">프로세스 간 통신 (IPC)</h3>
+                        <p class="mb-4">프로세스 간 통신은 프로세스들이 서로 데이터를 주고받는 메커니즘입니다.</p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover-card">
+                                <h4 class="font-semibold mb-1 text-primary">파이프 (Pipe)</h4>
+                                <p class="text-sm">단방향 통신, 주로 부모-자식 프로세스 간 사용</p>
+                            </div>
+                            
+                            <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover-card">
+                                <h4 class="font-semibold mb-1 text-primary">명명된 파이프 (Named Pipe)</h4>
+                                <p class="text-sm">양방향 통신, 관련 없는 프로세스 간 사용</p>
+                            </div>
+                            
+                            <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover-card">
+                                <h4 class="font-semibold mb-1 text-primary">메시지 큐 (Message Queue)</h4>
+                                <p class="text-sm">메시지 형태로 데이터 교환, 비동기식 통신</p>
+                            </div>
+                            
+                            <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover-card">
+                                <h4 class="font-semibold mb-1 text-primary">공유 메모리 (Shared Memory)</h4>
+                                <p class="text-sm">공통 메모리 영역에 데이터 읽고 쓰기, 빠른 통신</p>
+                            </div>
+                            
+                            <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover-card">
+                                <h4 class="font-semibold mb-1 text-primary">세마포어 (Semaphore)</h4>
+                                <p class="text-sm">동기화 메커니즘, 공유 자원 접근 제어</p>
+                            </div>
+                            
+                            <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover-card">
+                                <h4 class="font-semibold mb-1 text-primary">소켓 (Socket)</h4>
+                                <p class="text-sm">네트워크 통신, 다른 컴퓨터의 프로세스와 통신 가능</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+                        <h3 class="text-xl font-semibold mb-3">구현 예시 - 프로세스 생성 (POSIX C)</h3>
+                        <pre><code class="language-c">
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/wait.h&gt;
+
+int main() {
+    pid_t pid;
+    
+    // 자식 프로세스 생성
+    pid = fork();
+    
+    if (pid < 0) {
+        // 포크 실패
+        fprintf(stderr, "포크 실패\n");
+        return 1;
+    } else if (pid == 0) {
+        // 자식 프로세스
+        printf("자식 프로세스 (PID: %d)\n", getpid());
+        
+        // 자식 프로세스에서 새 프로그램 실행
+        execlp("/bin/ls", "ls", "-l", NULL);
+        
+        // exec 실패 시에만 실행됨
+        printf("exec 실패\n");
+        return 1;
+    } else {
+        // 부모 프로세스
+        printf("부모 프로세스 (PID: %d), 자식 PID: %d\n", getpid(), pid);
+        
+        // 자식 프로세스가 종료될 때까지 대기
+        wait(NULL);
+        printf("자식 프로세스 종료\n");
+    }
+    
+    return 0;
+}
+                        </code></pre>
+                    </div>
+                </section>
+                
+                <!-- 메모리 관리 -->
+                <section id="memory" class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300 dark:border-gray-700 text-primary">메모리 관리</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-semibold mb-3">정의</h3>
+                        <p class="mb-4">메모리 관리는 운영체제가 주 메모리(RAM)를 효율적으로 관리하고, 여러 프로세스 간에 메모리를 할당하고 회수하는 기능을 담당합니다. 제한된 메모리 자원을 효율적으로 사용하기 위한 다양한 기법들이 존재합니다.</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">메모리 계층 구조</h3>
+                        <div class="diagram">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md inline-block max-w-md">
+                                <div class="flex flex-col space-y-2">
+                                    <div class="p-2 bg-red-100 dark:bg-red-900 text-center rounded">레지스터 (가장 빠름)</div>
+                                    <div class="p-2 bg-orange-100 dark:bg-orange-900 text-center rounded">캐시 메모리</div>
+                                    <div class="p-2 bg-yellow-100 dark:bg-yellow-900 text-center rounded">주 메모리 (RAM)</div>
+                                    <div class="p-2 bg-green-100 dark:bg-green-900 text-center rounded">보조 메모리 (HDD/SSD)</div>
+                                    <div class="p-2 bg-blue-100 dark:bg-blue-900 text-center rounded">외부 저장장치 (가장 느림)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">메모리 할당 방식</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">연속 메모리 할당</h4>
+                                <p class="mb-2">프로세스에 연속된 메모리 공간을 할당하는 방식</p>
+                                <ul class="list-disc pl-6 space-y-1">
+                                    <li>최초 적합(First-Fit): 첫 번째 충분한 공간 할당</li>
+                                    <li>최적 적합(Best-Fit): 가장 크기가 맞는 공간 할당</li>
+                                    <li>최악 적합(Worst-Fit): 가장 큰 공간 할당</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">불연속 메모리 할당</h4>
+                                <p class="mb-2">프로세스를 여러 조각으로 나누어 메모리의 다른 위치에 할당</p>
+                                <ul class="list-disc pl-6 space-y-1">
+                                    <li>페이징(Paging): 고정 크기 블록 단위로 할당</li>
+                                    <li>세그먼테이션(Segmentation): 논리적 단위로 할당</li>
+                                    <li>페이지드 세그먼테이션: 두 방식의 혼합</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">가상 메모리</h3>
+                        <p class="mb-4">가상 메모리는 실제 물리적 메모리보다 큰 메모리 공간을 제공하는 기법으로, 필요한 부분만 메모리에 로드하고 나머지는 디스크에 저장합니다.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2 text-primary">장점</h4>
+                                <ul class="list-disc pl-6 space-y-1">
+                                    <li>물리적 메모리 제약 극복</li>
+                                    <li>프로세스 간 메모리 보호</li>
+                                    <li>메모리 효율성 증가</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2 text-primary">단점</h4>
+                                <ul class="list-disc pl-6 space-y-1">
+                                    <li>페이지 교체 오버헤드</li>
+                                    <li>페이지 부재(Page Fault) 처리 비용</li>
+                                    <li>디스크 I/O 증가</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="diagram mt-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md inline-block">
+                                <h4 class="text-center mb-3 font-semibold">가상 메모리 주소 변환</h4>
+                                <div class="flex flex-wrap justify-center gap-2 items-center">
+                                    <div class="p-2 rounded-lg bg-blue-100 dark:bg-blue-900">가상 주소</div>
+                                    <div>→</div>
+                                    <div class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900">MMU</div>
+                                    <div>→</div>
+                                    <div class="p-2 rounded-lg bg-green-100 dark:bg-green-900">물리 주소</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">페이지 교체 알고리즘</h3>
+                        <p class="mb-4">가상 메모리에서 새로운 페이지를 로드할 공간이 필요할 때, 어떤 페이지를 디스크로 내보낼지 결정하는 알고리즘입니다.</p>
+                        
+                        <div class="table-container">
+                            <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
+                                <thead class="bg-gray-200 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="py-2 px-4 text-left">알고리즘</th>
+                                        <th class="py-2 px-4 text-left">설명</th>
+                                        <th class="py-2 px-4 text-left">특징</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">FIFO</td>
+                                        <td class="py-2 px-4">가장 오래된 페이지 교체</td>
+                                        <td class="py-2 px-4">구현 간단, 성능 낮음</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">LRU</td>
+                                        <td class="py-2 px-4">가장 오랫동안 사용되지 않은 페이지 교체</td>
+                                        <td class="py-2 px-4">좋은 성능, 구현 복잡</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">OPT</td>
+                                        <td class="py-2 px-4">가장 오랫동안 사용되지 않을 페이지 교체</td>
+                                        <td class="py-2 px-4">이론적 최적, 실제 구현 불가</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-4 font-medium">Clock</td>
+                                        <td class="py-2 px-4">참조 비트를 사용한 LRU 근사 알고리즘</td>
+                                        <td class="py-2 px-4">LRU와 비슷한 성능, 구현 쉬움</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+                        <h3 class="text-xl font-semibold mb-3">구현 예시 - 페이지 교체 시뮬레이션 (Java)</h3>
+                        <pre><code class="language-java">
+import java.util.*;
+
+public class PageReplacementSimulation {
+    public static int fifoPageReplacement(int[] pages, int capacity) {
+        // 페이지 프레임 큐
+        Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+        Set&lt;Integer&gt; frameSet = new HashSet&lt;&gt;();
+        int pageFaults = 0;
+        
+        for (int page : pages) {
+            // 페이지가 프레임에 없는 경우
+            if (!frameSet.contains(page)) {
+                // 프레임이 가득 찬 경우
+                if (queue.size() == capacity) {
+                    int oldestPage = queue.poll();
+                    frameSet.remove(oldestPage);
+                }
+                
+                // 새 페이지 삽입
+                queue.add(page);
+                frameSet.add(page);
+                pageFaults++;
+            }
+        }
+        
+        return pageFaults;
+    }
+    
+    public static int lruPageReplacement(int[] pages, int capacity) {
+        // 페이지와 마지막 접근 시간을 저장
+        Map&lt;Integer, Integer&gt; frameMap = new HashMap&lt;&gt;();
+        int pageFaults = 0;
+        int time = 0;
+        
+        for (int page : pages) {
+            time++;
+            
+            // 페이지가 프레임에 없는 경우
+            if (!frameMap.containsKey(page)) {
+                // 프레임이 가득 찬 경우
+                if (frameMap.size() == capacity) {
+                    // 가장 오래 사용되지 않은 페이지 찾기
+                    int lruPage = -1;
+                    int lruTime = Integer.MAX_VALUE;
+                    
+                    for (Map.Entry&lt;Integer, Integer&gt; entry : frameMap.entrySet()) {
+                        if (entry.getValue() < lruTime) {
+                            lruTime = entry.getValue();
+                            lruPage = entry.getKey();
+                        }
+                    }
+                    
+                    // 가장 오래 사용되지 않은 페이지 제거
+                    frameMap.remove(lruPage);
+                }
+                
+                // 새 페이지 삽입
+                frameMap.put(page, time);
+                pageFaults++;
+            } else {
+                // 페이지가 이미 프레임에 있는 경우, 접근 시간 갱신
+                frameMap.put(page, time);
+            }
+        }
+        
+        return pageFaults;
+    }
+    
+    public static void main(String[] args) {
+        // 페이지 참조 시퀀스
+        int[] pages = {7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1};
+        int capacity = 3;  // 프레임 수
+        
+        System.out.println("FIFO 페이지 부재: " + fifoPageReplacement(pages, capacity));
+        System.out.println("LRU 페이지 부재: " + lruPageReplacement(pages, capacity));
+    }
+}
+                        </code></pre>
+                    </div>
+                </section>
+                
+                <!-- 파일 시스템 -->
+                <section id="file" class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300 dark:border-gray-700 text-primary">파일 시스템</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-semibold mb-3">정의</h3>
+                        <p class="mb-4">파일 시스템은 컴퓨터에서 파일이나 데이터를 저장하고 접근하는 방법과 구조를 정의합니다. 디스크와 같은 물리적 저장 장치의 데이터를 추상화하여 사용자와 프로그램에게 일관된 인터페이스를 제공합니다.</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">파일 시스템 구성 요소</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">파일</h4>
+                                <p>관련 정보의 모음으로, 이름, 유형, 위치, 크기, 보호 등의 속성을 가집니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>일반 파일: 사용자 데이터</li>
+                                    <li>디렉토리 파일: 파일 시스템 구조</li>
+                                    <li>특수 파일: 장치와 기타 OS 자원</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">디렉토리</h4>
+                                <p>파일들을 체계적으로 관리하기 위한 구조입니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>단일 레벨: 하나의 디렉토리에 모든 파일</li>
+                                    <li>2단계: 사용자별 디렉토리</li>
+                                    <li>트리 구조: 계층적 구조</li>
+                                    <li>그래프 구조: 순환 가능한 구조</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">파일 할당 방식</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">연속 할당</h4>
+                                <p>파일에 연속된 블록을 할당합니다.</p>
+                                <div class="mt-2">
+                                    <div class="font-medium">장점:</div>
+                                    <ul class="list-disc pl-6">
+                                        <li>구현 간단</li>
+                                        <li>순차 접근 빠름</li>
+                                    </ul>
+                                    <div class="font-medium mt-1">단점:</div>
+                                    <ul class="list-disc pl-6">
+                                        <li>외부 단편화 발생</li>
+                                        <li>파일 크기 변경 어려움</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">연결 할당</h4>
+                                <p>파일의 각 블록이 다음 블록을 가리키는 포인터를 포함합니다.</p>
+                                <div class="mt-2">
+                                    <div class="font-medium">장점:</div>
+                                    <ul class="list-disc pl-6">
+                                        <li>외부 단편화 없음</li>
+                                        <li>파일 크기 변경 용이</li>
+                                    </ul>
+                                    <div class="font-medium mt-1">단점:</div>
+                                    <ul class="list-disc pl-6">
+                                        <li>직접 접근 느림</li>
+                                        <li>포인터로 인한 오버헤드</li>
+                                        <li>안정성 문제 (포인터 손상)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">인덱스 할당</h4>
+                                <p>파일의 모든 블록 주소를 인덱스 블록에 보관합니다.</p>
+                                <div class="mt-2">
+                                    <div class="font-medium">장점:</div>
+                                    <ul class="list-disc pl-6">
+                                        <li>직접 접근 지원</li>
+                                        <li>외부 단편화 없음</li>
+                                        <li>파일 크기 변경 용이</li>
+                                    </ul>
+                                    <div class="font-medium mt-1">단점:</div>
+                                    <ul class="list-disc pl-6">
+                                        <li>인덱스를 위한 추가 공간 필요</li>
+                                        <li>큰 파일에 여러 인덱스 필요</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">주요 파일 시스템</h3>
+                        <div class="table-container">
+                            <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
+                                <thead class="bg-gray-200 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="py-2 px-4 text-left">파일 시스템</th>
+                                        <th class="py-2 px-4 text-left">운영체제</th>
+                                        <th class="py-2 px-4 text-left">특징</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">FAT32</td>
+                                        <td class="py-2 px-4">Windows</td>
+                                        <td class="py-2 px-4">단순한 구조, 호환성 높음, 4GB 파일 크기 제한</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">NTFS</td>
+                                        <td class="py-2 px-4">Windows</td>
+                                        <td class="py-2 px-4">보안 기능, 저널링, 큰 파일 지원</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">ext4</td>
+                                        <td class="py-2 px-4">Linux</td>
+                                        <td class="py-2 px-4">저널링, 대용량 파일 시스템 지원</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">HFS+</td>
+                                        <td class="py-2 px-4">MacOS</td>
+                                        <td class="py-2 px-4">유니코드 지원, 저널링</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-4 font-medium">APFS</td>
+                                        <td class="py-2 px-4">MacOS</td>
+                                        <td class="py-2 px-4">SSD 최적화, 스냅샷, 암호화</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+                        <h3 class="text-xl font-semibold mb-3">구현 예시 - 간단한 파일 연산 (C++)</h3>
+                        <pre><code class="language-cpp">
+#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;string&gt;
+#include &lt;filesystem&gt;
+namespace fs = std::filesystem;
+
+void listFiles(const std::string& path) {
+    std::cout << "디렉토리 내용: " << path << std::endl;
+    
+    for (const auto& entry : fs::directory_iterator(path)) {
+        std::cout << entry.path().filename() << " - ";
+        
+        if (fs::is_regular_file(entry)) {
+            std::cout << "파일, 크기: " << fs::file_size(entry) << " 바이트";
+        } else if (fs::is_directory(entry)) {
+            std::cout << "디렉토리";
+        } else {
+            std::cout << "기타";
+        }
+        
+        std::cout << std::endl;
+    }
+}
+
+void createFile(const std::string& filename, const std::string& content) {
+    std::ofstream file(filename);
+    
+    if (file.is_open()) {
+        file << content;
+        file.close();
+        std::cout << "파일 생성 완료: " << filename << std::endl;
+    } else {
+        std::cerr << "파일을 생성할 수 없습니다." << std::endl;
+    }
+}
+
+std::string readFile(const std::string& filename) {
+    std::ifstream file(filename);
+    std::string content;
+    
+    if (file.is_open()) {
+        std::string line;
+        while (getline(file, line)) {
+            content += line + "\n";
+        }
+        file.close();
+    } else {
+        std::cerr << "파일을 읽을 수 없습니다." << std::endl;
+    }
+    
+    return content;
+}
+
+int main() {
+    // 현재 작업 디렉토리 확인
+    std::string currentPath = fs::current_path().string();
+    std::cout << "현재 경로: " << currentPath << std::endl;
+    
+    // 디렉토리 내용 나열
+    listFiles(currentPath);
+    
+    // 새 파일 생성
+    createFile("example.txt", "파일 시스템 예제 내용입니다.\n이것은 두 번째 줄입니다.");
+    
+    // 파일 내용 읽기
+    std::string content = readFile("example.txt");
+    std::cout << "파일 내용:\n" << content << std::endl;
+    
+    // 파일 삭제
+    if (fs::remove("example.txt")) {
+        std::cout << "파일이 삭제되었습니다." << std::endl;
+    } else {
+        std::cerr << "파일을 삭제할 수 없습니다." << std::endl;
+    }
+    
+    return 0;
+}
+                        </code></pre>
+                    </div>
+                </section>
+                
+                <!-- 입출력 관리 -->
+                <section id="io" class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300 dark:border-gray-700 text-primary">입출력 관리</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-semibold mb-3">정의</h3>
+                        <p class="mb-4">입출력(I/O) 관리는 운영체제가 컴퓨터와 외부 장치 간의 데이터 교환을 처리하는 방식을 의미합니다. 다양한 하드웨어 장치와의 통신 과정을 추상화하고 효율적으로 관리합니다.</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">I/O 하드웨어</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">블록 장치</h4>
+                                <p>정해진 크기의 블록 단위로 데이터를 전송하는 장치 (예: HDD, SSD, DVD)</p>
+                            </div>
+                            
+                            <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">문자 장치</h4>
+                                <p>문자(바이트) 단위로 데이터를 전송하는 장치 (예: 키보드, 마우스, 프린터)</p>
+                            </div>
+                            
+                            <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">네트워크 장치</h4>
+                                <p>패킷 단위로 데이터를 전송하는 장치 (예: 네트워크 인터페이스 카드)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">I/O 하위 시스템 구성</h3>
+                        <div class="diagram mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md inline-block max-w-md">
+                                <div class="flex flex-col space-y-2">
+                                    <div class="p-2 bg-blue-100 dark:bg-blue-900 text-center rounded">사용자 수준 I/O 소프트웨어</div>
+                                    <div class="p-2 bg-green-100 dark:bg-green-900 text-center rounded">장치 독립적 I/O 소프트웨어</div>
+                                    <div class="p-2 bg-yellow-100 dark:bg-yellow-900 text-center rounded">장치 드라이버</div>
+                                    <div class="p-2 bg-red-100 dark:bg-red-900 text-center rounded">인터럽트 핸들러</div>
+                                    <div class="p-2 bg-purple-100 dark:bg-purple-900 text-center rounded">하드웨어</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">I/O 기법</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">프로그램 I/O</h4>
+                                <p>CPU가 I/O 장치의 상태를 지속적으로 확인하여 데이터를 직접 교환합니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>구현이 단순</li>
+                                    <li>CPU 시간 낭비</li>
+                                    <li>비효율적인 대기</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">인터럽트 기반 I/O</h4>
+                                <p>CPU가 I/O 요청을 보내고 다른 작업을 수행하다가 I/O 완료 인터럽트를 받습니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>CPU 효율성 향상</li>
+                                    <li>여전히 데이터 전송에 CPU 관여</li>
+                                    <li>일반적으로 많이 사용됨</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">DMA(Direct Memory Access)</h4>
+                                <p>DMA 컨트롤러가 CPU 대신 데이터 전송을 처리합니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>CPU 개입 최소화</li>
+                                    <li>데이터 전송 효율 증가</li>
+                                    <li>블록 단위 전송에 적합</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">디스크 스케줄링 알고리즘</h3>
+                        <p class="mb-4">디스크 I/O 요청이 여러 개 있을 때, 처리 순서를 결정하는 알고리즘입니다.</p>
+                        
+                        <div class="table-container">
+                            <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
+                                <thead class="bg-gray-200 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="py-2 px-4 text-left">알고리즘</th>
+                                        <th class="py-2 px-4 text-left">설명</th>
+                                        <th class="py-2 px-4 text-left">특징</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">FCFS</td>
+                                        <td class="py-2 px-4">요청이 도착한 순서대로 처리</td>
+                                        <td class="py-2 px-4">공정하지만 비효율적</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">SSTF</td>
+                                        <td class="py-2 px-4">현재 위치에서 가장 가까운 요청 먼저 처리</td>
+                                        <td class="py-2 px-4">지역성 우수, 기아 상태 가능</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">SCAN</td>
+                                        <td class="py-2 px-4">한 방향으로 이동하며 요청 처리, 끝에서 방향 전환</td>
+                                        <td class="py-2 px-4">균등한 서비스, 엘리베이터 알고리즘</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-4 font-medium">C-SCAN</td>
+                                        <td class="py-2 px-4">한 방향으로만 요청 처리, 끝에서 시작점으로 이동</td>
+                                        <td class="py-2 px-4">균등한 대기 시간</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+                        <h3 class="text-xl font-semibold mb-3">구현 예시 - 디스크 스케줄링 (Python)</h3>
+                        <pre><code class="language-python">
+def fcfs_disk_scheduling(requests, head_start):
+    """선입선출(FCFS) 디스크 스케줄링 알고리즘"""
+    if not requests:
+        return 0
+    
+    total_distance = 0
+    current_head = head_start
+    
+    for request in requests:
+        # 헤드 이동 거리 계산
+        distance = abs(request - current_head)
+        total_distance += distance
+        
+        # 헤드 위치 업데이트
+        current_head = request
+    
+    return total_distance
+
+def sstf_disk_scheduling(requests, head_start):
+    """최단 탐색 시간 우선(SSTF) 디스크 스케줄링 알고리즘"""
+    if not requests:
+        return 0
+    
+    total_distance = 0
+    current_head = head_start
+    remaining = requests.copy()
+    
+    while remaining:
+        # 현재 헤드 위치에서 가장 가까운 요청 찾기
+        closest = min(remaining, key=lambda x: abs(x - current_head))
+        
+        # 헤드 이동 거리 계산
+        distance = abs(closest - current_head)
+        total_distance += distance
+        
+        # 헤드 위치 업데이트 및 처리된 요청 제거
+        current_head = closest
+        remaining.remove(closest)
+    
+    return total_distance
+
+def scan_disk_scheduling(requests, head_start, disk_size, direction="up"):
+    """SCAN 디스크 스케줄링 알고리즘 (엘리베이터 알고리즘)"""
+    if not requests:
+        return 0
+    
+    total_distance = 0
+    current_head = head_start
+    
+    # 요청을 오름차순으로 정렬
+    sorted_requests = sorted(requests)
+    
+    # 현재 헤드 위치보다 큰 요청과 작은 요청 분리
+    greater = [r for r in sorted_requests if r >= current_head]
+    lesser = [r for r in sorted_requests if r < current_head]
+    
+    # 진행 방향에 따라 처리 순서 결정
+    if direction == "up":
+        # 먼저 큰 요청 처리 후 작은 요청 처리
+        path = greater + [disk_size - 1] + lesser[::-1]
+    else:
+        # 먼저 작은 요청 처리 후 큰 요청 처리
+        path = lesser[::-1] + [0] + greater
+    
+    # 총 헤드 이동 거리 계산
+    for pos in path:
+        distance = abs(pos - current_head)
+        total_distance += distance
+        current_head = pos
+    
+    return total_distance
+
+# 테스트
+if __name__ == "__main__":
+    # 디스크 요청 및 초기 헤드 위치
+    requests = [98, 183, 37, 122, 14, 124, 65, 67]
+    head_start = 53
+    disk_size = 200
+    
+    fcfs_distance = fcfs_disk_scheduling(requests, head_start)
+    sstf_distance = sstf_disk_scheduling(requests, head_start)
+    scan_distance = scan_disk_scheduling(requests, head_start, disk_size, "up")
+    
+    print(f"FCFS 총 헤드 이동 거리: {fcfs_distance}")
+    print(f"SSTF 총 헤드 이동 거리: {sstf_distance}")
+    print(f"SCAN 총 헤드 이동 거리: {scan_distance}")
+                        </code></pre>
+                    </div>
+                </section>
+                
+                <!-- CPU 스케줄링 -->
+                <section id="scheduling" class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300 dark:border-gray-700 text-primary">CPU 스케줄링</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-semibold mb-3">정의</h3>
+                        <p class="mb-4">CPU 스케줄링은 준비 상태에 있는 여러 프로세스 중 어떤 프로세스에게 CPU를 할당할지 결정하는 과정입니다. 시스템의 전체적인 성능과 효율성에 큰 영향을 미치는 중요한 요소입니다.</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">CPU 스케줄링 유형</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">선점형 스케줄링</h4>
+                                <p>실행 중인 프로세스를 중단하고 다른 프로세스에게 CPU를 할당할 수 있는 방식입니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>더 높은 우선순위의 프로세스 즉시 실행 가능</li>
+                                    <li>문맥 교환 오버헤드 발생</li>
+                                    <li>시분할 시스템에 적합</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">비선점형 스케줄링</h4>
+                                <p>프로세스가 자발적으로 CPU를 반환할 때까지 계속 실행되는 방식입니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>프로세스 자발적으로 CPU 양보 (I/O, 종료 등)</li>
+                                    <li>문맥 교환 오버헤드 적음</li>
+                                    <li>실시간 응답이 중요하지 않은 시스템에 적합</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">CPU 스케줄링 알고리즘</h3>
+                        <div class="table-container">
+                            <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
+                                <thead class="bg-gray-200 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="py-2 px-4 text-left">알고리즘</th>
+                                        <th class="py-2 px-4 text-left">방식</th>
+                                        <th class="py-2 px-4 text-left">설명</th>
+                                        <th class="py-2 px-4 text-left">특징</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">FCFS</td>
+                                        <td class="py-2 px-4">비선점형</td>
+                                        <td class="py-2 px-4">먼저 도착한 프로세스 먼저 처리</td>
+                                        <td class="py-2 px-4">단순하지만 평균 대기 시간 길 수 있음</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">SJF</td>
+                                        <td class="py-2 px-4">비선점형</td>
+                                        <td class="py-2 px-4">실행 시간이 가장 짧은 프로세스 먼저 처리</td>
+                                        <td class="py-2 px-4">최적의 평균 대기 시간, 기아 상태 가능</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">SRTF</td>
+                                        <td class="py-2 px-4">선점형</td>
+                                        <td class="py-2 px-4">남은 실행 시간이 가장 짧은 프로세스 선택</td>
+                                        <td class="py-2 px-4">SJF의 선점형 버전, 문맥 교환 많음</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">우선순위</td>
+                                        <td class="py-2 px-4">선점/비선점</td>
+                                        <td class="py-2 px-4">우선순위가 높은 프로세스 먼저 처리</td>
+                                        <td class="py-2 px-4">우선순위 결정 방식 다양, 기아 상태 가능</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">라운드 로빈</td>
+                                        <td class="py-2 px-4">선점형</td>
+                                        <td class="py-2 px-4">각 프로세스에 동일한 시간 할당(타임 퀀텀)</td>
+                                        <td class="py-2 px-4">공정한 CPU 분배, 시분할 시스템에 적합</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-4 font-medium">다단계 큐</td>
+                                        <td class="py-2 px-4">선점형</td>
+                                        <td class="py-2 px-4">프로세스를 그룹화하여 여러 큐로 관리</td>
+                                        <td class="py-2 px-4">다양한 유형의 프로세스에 적합</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">스케줄링 성능 지표</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover-card">
+                                <h4 class="font-semibold mb-1 text-primary">CPU 이용률 (CPU Utilization)</h4>
+                                <p class="text-sm">전체 시간 중 CPU가 작업을 처리한 시간의 비율</p>
+                            </div>
+                            
+                            <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover-card">
+                                <h4 class="font-semibold mb-1 text-primary">처리량 (Throughput)</h4>
+                                <p class="text-sm">단위 시간당 완료된 프로세스의 수</p>
+                            </div>
+                            
+                            <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover-card">
+                                <h4 class="font-semibold mb-1 text-primary">반환 시간 (Turnaround Time)</h4>
+                                <p class="text-sm">프로세스가 시작부터 종료까지 걸린 총 시간</p>
+                            </div>
+                            
+                            <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover-card">
+                                <h4 class="font-semibold mb-1 text-primary">대기 시간 (Waiting Time)</h4>
+                                <p class="text-sm">프로세스가 준비 큐에서 대기한 총 시간</p>
+                            </div>
+                            
+                            <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover-card">
+                                <h4 class="font-semibold mb-1 text-primary">응답 시간 (Response Time)</h4>
+                                <p class="text-sm">프로세스가 처음 요청된 후 첫 응답이 시작되기까지의 시간</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+                        <h3 class="text-xl font-semibold mb-3">구현 예시 - CPU 스케줄링 시뮬레이션 (Java)</h3>
+                        <pre><code class="language-java">
+import java.util.*;
+
+class Process {
+    int id;
+    int arrivalTime;
+    int burstTime;
+    int priority;
+    int remainingTime;
+    int waitingTime;
+    int turnaroundTime;
+    int responseTime = -1;
+    
+    public Process(int id, int arrivalTime, int burstTime, int priority) {
+        this.id = id;
+        this.arrivalTime = arrivalTime;
+        this.burstTime = burstTime;
+        this.priority = priority;
+        this.remainingTime = burstTime;
+    }
+}
+
+public class CPUSchedulingSimulation {
+    
+    // FCFS (First-Come, First-Served) 스케줄링
+    public static void fcfs(List<Process> processes) {
+        // 도착 시간순으로 정렬
+        processes.sort(Comparator.comparingInt(p -> p.arrivalTime));
+        
+        int currentTime = 0;
+        
+        for (Process process : processes) {
+            // 프로세스 도착 시간이 현재 시간보다 늦으면 시간 조정
+            if (process.arrivalTime > currentTime) {
+                currentTime = process.arrivalTime;
+            }
+            
+            // 첫 응답 시간 설정
+            process.responseTime = currentTime - process.arrivalTime;
+            
+            // 대기 시간 계산
+            process.waitingTime = currentTime - process.arrivalTime;
+            
+            // 프로세스 실행
+            currentTime += process.burstTime;
+            
+            // 반환 시간 계산
+            process.turnaroundTime = currentTime - process.arrivalTime;
+        }
+    }
+    
+    // SJF (Shortest Job First) 스케줄링
+    public static void sjf(List<Process> processes) {
+        // 도착 시간순으로 정렬
+        processes.sort(Comparator.comparingInt(p -> p.arrivalTime));
+        
+        int currentTime = 0;
+        int completed = 0;
+        int n = processes.size();
+        boolean[] isCompleted = new boolean[n];
+        
+        while (completed != n) {
+            int shortestIndex = -1;
+            int shortestBurst = Integer.MAX_VALUE;
+            
+            // 현재 시간에 도착한 프로세스 중 가장 짧은 실행 시간을 가진 프로세스 찾기
+            for (int i = 0; i < n; i++) {
+                if (!isCompleted[i] && processes.get(i).arrivalTime <= currentTime && 
+                    processes.get(i).burstTime < shortestBurst) {
+                    shortestBurst = processes.get(i).burstTime;
+                    shortestIndex = i;
+                }
+            }
+            
+            // 실행할 프로세스가 없으면 시간 진행
+            if (shortestIndex == -1) {
+                currentTime++;
+                continue;
+            }
+            
+            Process process = processes.get(shortestIndex);
+            
+            // 첫 응답 시간 설정
+            if (process.responseTime == -1) {
+                process.responseTime = currentTime - process.arrivalTime;
+            }
+            
+            // 대기 시간 계산
+            process.waitingTime = currentTime - process.arrivalTime;
+            
+            // 프로세스 실행
+            currentTime += process.burstTime;
+            
+            // 반환 시간 계산
+            process.turnaroundTime = currentTime - process.arrivalTime;
+            
+            // 프로세스 완료 표시
+            isCompleted[shortestIndex] = true;
+            completed++;
+        }
+    }
+    
+    // 라운드 로빈 스케줄링
+    public static void roundRobin(List<Process> processes, int timeQuantum) {
+        // 도착 시간순으로 정렬
+        processes.sort(Comparator.comparingInt(p -> p.arrivalTime));
+        
+        int currentTime = 0;
+        
+        // 각 프로세스의 남은 시간 설정
+        for (Process process : processes) {
+            process.remainingTime = process.burstTime;
+        }
+        
+        Queue<Process> queue = new LinkedList<>();
+        int index = 0;
+        
+        // 첫 번째 프로세스를 큐에 추가
+        while (index < processes.size() && processes.get(index).arrivalTime <= currentTime) {
+            queue.add(processes.get(index));
+            index++;
+        }
+        
+        while (!queue.isEmpty() || index < processes.size()) {
+            if (queue.isEmpty()) {
+                // 큐가 비어있다면 다음 도착 프로세스 시간으로 이동
+                currentTime = processes.get(index).arrivalTime;
+                while (index < processes.size() && processes.get(index).arrivalTime <= currentTime) {
+                    queue.add(processes.get(index));
+                    index++;
+                }
+                continue;
+            }
+            
+            Process currentProcess = queue.poll();
+            
+            // 첫 응답 시간 설정
+            if (currentProcess.responseTime == -1) {
+                currentProcess.responseTime = currentTime - currentProcess.arrivalTime;
+            }
+            
+            // 프로세스 실행 (타임 퀀텀 또는 남은 시간)
+            int executionTime = Math.min(timeQuantum, currentProcess.remainingTime);
+            currentTime += executionTime;
+            currentProcess.remainingTime -= executionTime;
+            
+            // 새로 도착한 프로세스 큐에 추가
+            while (index < processes.size() && processes.get(index).arrivalTime <= currentTime) {
+                queue.add(processes.get(index));
+                index++;
+            }
+            
+            // 프로세스 완료 여부 확인
+            if (currentProcess.remainingTime > 0) {
+                queue.add(currentProcess);
+            } else {
+                // 프로세스 완료 - 반환 시간 계산
+                currentProcess.turnaroundTime = currentTime - currentProcess.arrivalTime;
+                currentProcess.waitingTime = currentProcess.turnaroundTime - currentProcess.burstTime;
+            }
+        }
+    }
+    
+    // 결과 출력
+    public static void printResult(List<Process> processes, String algorithmName) {
+        System.out.println("\n" + algorithmName + " 스케줄링 결과:");
+        System.out.println("-----------------------------------------------------");
+        System.out.println("프로세스 ID | 도착 시간 | 실행 시간 | 대기 시간 | 반환 시간 | 응답 시간");
+        System.out.println("-----------------------------------------------------");
+        
+        int totalWaitingTime = 0;
+        int totalTurnaroundTime = 0;
+        int totalResponseTime = 0;
+        
+        for (Process process : processes) {
+            System.out.printf("%10d | %9d | %9d | %9d | %9d | %9d\n",
+                process.id, process.arrivalTime, process.burstTime,
+                process.waitingTime, process.turnaroundTime, process.responseTime);
+            
+            totalWaitingTime += process.waitingTime;
+            totalTurnaroundTime += process.turnaroundTime;
+            totalResponseTime += process.responseTime;
+        }
+        
+        System.out.println("-----------------------------------------------------");
+        System.out.printf("평균 대기 시간: %.2f\n", (float)totalWaitingTime / processes.size());
+        System.out.printf("평균 반환 시간: %.2f\n", (float)totalTurnaroundTime / processes.size());
+        System.out.printf("평균 응답 시간: %.2f\n", (float)totalResponseTime / processes.size());
+    }
+    
+    public static void main(String[] args) {
+        // 프로세스 정보 설정 (ID, 도착시간, 실행시간, 우선순위)
+        List<Process> processes1 = Arrays.asList(
+            new Process(1, 0, 5, 3),
+            new Process(2, 1, 3, 1),
+            new Process(3, 2, 8, 2),
+            new Process(4, 3, 2, 4),
+            new Process(5, 4, 4, 5)
+        );
+        
+        List<Process> processes2 = new ArrayList<>();
+        List<Process> processes3 = new ArrayList<>();
+        
+        // 깊은 복사
+        for (Process p : processes1) {
+            processes2.add(new Process(p.id, p.arrivalTime, p.burstTime, p.priority));
+            processes3.add(new Process(p.id, p.arrivalTime, p.burstTime, p.priority));
+        }
+        
+        // 각 스케줄링 알고리즘 실행
+        fcfs(processes1);
+        sjf(processes2);
+        roundRobin(processes3, 2);
+        
+        // 결과 출력
+        printResult(processes1, "FCFS");
+        printResult(processes2, "SJF");
+        printResult(processes3, "Round Robin (Time Quantum = 2)");
+    }
+}
+                        </code></pre>
+                    </div>
+                </section>
+                
+                <!-- 교착상태 -->
+                <section id="deadlock" class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300 dark:border-gray-700 text-primary">교착상태</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-semibold mb-3">정의</h3>
+                        <p class="mb-4">교착상태(Deadlock)는 두 개 이상의 프로세스가 서로 상대방의 작업이 끝나기 만을 기다리며 진행이 멈춘 상태를 의미합니다. 프로세스들이 자원을 점유한 상태에서 다른 프로세스가 점유한 자원을 요청할 때 발생할 수 있습니다.</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">교착상태 발생 조건</h3>
+                        <p class="mb-2">다음 네 가지 조건이 모두 충족될 때 교착상태가 발생합니다:</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">상호 배제 (Mutual Exclusion)</h4>
+                                <p>자원은 한 번에 하나의 프로세스만 사용할 수 있습니다.</p>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">점유와 대기 (Hold and Wait)</h4>
+                                <p>프로세스가 자원을 보유한 상태에서 다른 자원을 기다립니다.</p>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">비선점 (No Preemption)</h4>
+                                <p>자원은 사용이 끝날 때까지 강제로 빼앗을 수 없습니다.</p>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">순환 대기 (Circular Wait)</h4>
+                                <p>프로세스 간의 자원 요청이 순환 형태로 발생합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="diagram mb-6">
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md inline-block">
+                            <h4 class="text-center mb-3 font-semibold">교착상태 예시</h4>
+                            <div class="flex flex-wrap justify-center gap-2 items-center">
+                                <div class="p-2 rounded-lg bg-blue-100 dark:bg-blue-900 text-center">프로세스 A<br>(자원 1 점유)<br>자원 2 요청</div>
+                                <div class="transform rotate-90 md:rotate-0">⟷</div>
+                                <div class="p-2 rounded-lg bg-green-100 dark:bg-green-900 text-center">프로세스 B<br>(자원 2 점유)<br>자원 1 요청</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">교착상태 처리 방법</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">예방 (Prevention)</h4>
+                                <p class="mb-2">교착상태 발생 조건 중 하나 이상을 원천적으로 차단합니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>상호 배제 제거: 공유 가능한 자원 사용</li>
+                                    <li>점유와 대기 제거: 필요한 모든 자원을 한번에 요청</li>
+                                    <li>비선점 제거: 자원을 강제로 빼앗을 수 있게 함</li>
+                                    <li>순환 대기 제거: 자원에 번호 부여, 순서대로 요청</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">회피 (Avoidance)</h4>
+                                <p class="mb-2">자원 요청 시 안전한 상태를 유지할 수 있는지 확인합니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>은행원 알고리즘: 항상 안전한 상태를 유지</li>
+                                    <li>자원 할당 그래프: 순환 대기 발생 여부 확인</li>
+                                    <li>안전 상태(safe state)와 불안전 상태(unsafe state) 구분</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">탐지 및 복구 (Detection & Recovery)</h4>
+                                <p class="mb-2">교착상태를 허용하되, 주기적으로 감지하고 복구합니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>자원 할당 그래프로 순환 대기 감지</li>
+                                    <li>프로세스 종료: 교착상태 프로세스 일부/전체 종료</li>
+                                    <li>자원 선점: 자원을 강제로 빼앗아 할당</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">무시 (Ignorance)</h4>
+                                <p class="mb-2">교착상태를 무시하고 아무런 조치를 취하지 않습니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>발생 빈도가 낮은 경우 적합</li>
+                                    <li>예방/회피/탐지 비용이 더 큰 경우</li>
+                                    <li>재부팅으로 해결 (일반적인 PC OS)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+                        <h3 class="text-xl font-semibold mb-3">구현 예시 - 은행원 알고리즘 (C)</h3>
+                        <pre><code class="language-c">
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_PROCESSES 5
+#define MAX_RESOURCES 3
+
+// 시스템 자원 상태 출력
+void printState(int available[], int allocation[][MAX_RESOURCES], 
+                int need[][MAX_RESOURCES], int n, int m) {
+    printf("\n시스템 상태:\n");
+    
+    printf("가용 자원: ");
+    for (int i = 0; i < m; i++) {
+        printf("%d ", available[i]);
+    }
+    
+    printf("\n\n할당된 자원:\n");
+    for (int i = 0; i < n; i++) {
+        printf("프로세스 %d: ", i);
+        for (int j = 0; j < m; j++) {
+            printf("%d ", allocation[i][j]);
+        }
+        printf("\n");
+    }
+    
+    printf("\n필요한 자원:\n");
+    for (int i = 0; i < n; i++) {
+        printf("프로세스 %d: ", i);
+        for (int j = 0; j < m; j++) {
+            printf("%d ", need[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// 안전성 검사 알고리즘
+bool isSafeState(int available[], int allocation[][MAX_RESOURCES], 
+                 int need[][MAX_RESOURCES], int n, int m) {
+    bool finished[MAX_PROCESSES] = {false};
+    int work[MAX_RESOURCES];
+    int safeSeq[MAX_PROCESSES];
+    int count = 0;
+    
+    // work = available (가용 자원의 초기 상태)
+    for (int i = 0; i < m; i++) {
+        work[i] = available[i];
+    }
+    
+    // 모든 프로세스에 대해 안전한 순서 찾기
+    while (count < n) {
+        bool found = false;
+        
+        for (int i = 0; i < n; i++) {
+            // 아직 처리되지 않은 프로세스 찾기
+            if (!finished[i]) {
+                // 현재 자원으로 이 프로세스의 요구를 충족할 수 있는지 확인
+                bool possible = true;
+                for (int j = 0; j < m; j++) {
+                    if (need[i][j] > work[j]) {
+                        possible = false;
+                        break;
+                    }
+                }
+                
+                // 요구 충족 가능
+                if (possible) {
+                    // 프로세스가 완료되면 자원 반환
+                    for (int j = 0; j < m; j++) {
+                        work[j] += allocation[i][j];
+                    }
+                    
+                    safeSeq[count++] = i;
+                    finished[i] = true;
+                    found = true;
+                }
+            }
+        }
+        
+        // 이번 반복에서 안전한 프로세스를 찾지 못했으면 불안전 상태
+        if (!found) {
+            printf("시스템이 불안전 상태입니다.\n");
+            return false;
+        }
+    }
+    
+    // 안전 상태이면 안전 순서 출력
+    printf("시스템이 안전 상태입니다.\n");
+    printf("안전 순서: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d", safeSeq[i]);
+        if (i < n - 1) {
+            printf(" -> ");
+        }
+    }
+    printf("\n");
+    
+    return true;
+}
+
+// 자원 요청 처리
+bool requestResources(int processId, int request[], int available[], 
+                      int allocation[][MAX_RESOURCES], int need[][MAX_RESOURCES], 
+                      int n, int m) {
+    printf("\n프로세스 %d의 자원 요청: ", processId);
+    for (int i = 0; i < m; i++) {
+        printf("%d ", request[i]);
+    }
+    printf("\n");
+    
+    // 요청이 필요한 자원보다 많은지 확인
+    for (int i = 0; i < m; i++) {
+        if (request[i] > need[processId][i]) {
+            printf("오류: 요청이 필요한 최대 자원을 초과했습니다.\n");
+            return false;
+        }
+    }
+    
+    // 요청이 가용 자원보다 많은지 확인
+    for (int i = 0; i < m; i++) {
+        if (request[i] > available[i]) {
+            printf("자원이 충분하지 않습니다. 프로세스 %d는 대기해야 합니다.\n", processId);
+            return false;
+        }
+    }
+    
+    // 요청 처리 시뮬레이션
+    // 자원 할당
+    for (int i = 0; i < m; i++) {
+        available[i] -= request[i];
+        allocation[processId][i] += request[i];
+        need[processId][i] -= request[i];
+    }
+    
+    // 안전 상태 확인
+    if (isSafeState(available, allocation, need, n, m)) {
+        printf("자원이 프로세스 %d에게 할당되었습니다.\n", processId);
+        return true;
+    } else {
+        // 안전하지 않으면 이전 상태로 롤백
+        for (int i = 0; i < m; i++) {
+            available[i] += request[i];
+            allocation[processId][i] -= request[i];
+            need[processId][i] += request[i];
+        }
+        printf("자원 할당이 불안전 상태를 초래하므로 거부되었습니다.\n");
+        return false;
+    }
+}
+
+int main() {
+    int n, m; // n: 프로세스 수, m: 자원 유형 수
+    
+    printf("프로세스 수 입력: ");
+    scanf("%d", &n);
+    
+    printf("자원 유형 수 입력: ");
+    scanf("%d", &m);
+    
+    // 최대 자원 수요
+    int max[MAX_PROCESSES][MAX_RESOURCES];
+    // 할당된 자원
+    int allocation[MAX_PROCESSES][MAX_RESOURCES] = {0};
+    // 필요한 자원
+    int need[MAX_PROCESSES][MAX_RESOURCES];
+    // 가용 자원
+    int available[MAX_RESOURCES];
+    
+    // 최대 자원 수요 입력
+    printf("\n각 프로세스의 최대 자원 수요 입력:\n");
+    for (int i = 0; i < n; i++) {
+        printf("프로세스 %d: ", i);
+        for (int j = 0; j < m; j++) {
+            scanf("%d", &max[i][j]);
+            need[i][j] = max[i][j]; // 초기 need = max
+        }
+    }
+    
+    // 가용 자원 입력
+    printf("\n가용 자원 입력: ");
+    for (int i = 0; i < m; i++) {
+        scanf("%d", &available[i]);
+    }
+    
+    // 초기 상태 출력
+    printState(available, allocation, need, n, m);
+    
+    // 안전 상태 확인
+    isSafeState(available, allocation, need, n, m);
+    
+    // 자원 요청 시뮬레이션
+    int processId;
+    int request[MAX_RESOURCES];
+    
+    printf("\n자원 요청 시뮬레이션\n");
+    printf("요청할 프로세스 ID 입력: ");
+    scanf("%d", &processId);
+    
+    printf("요청할 자원 수 입력: ");
+    for (int i = 0; i < m; i++) {
+        scanf("%d", &request[i]);
+    }
+    
+    // 자원 요청 처리
+    requestResources(processId, request, available, allocation, need, n, m);
+    
+    // 처리 후 상태 출력
+    printState(available, allocation, need, n, m);
+    
+    return 0;
+}
+                        </code></pre>
+                    </div>
+                </section>
+                
+                <!-- 가상화 -->
+                <section id="virtual" class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300 dark:border-gray-700 text-primary">가상화</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-semibold mb-3">정의</h3>
+                        <p class="mb-4">가상화(Virtualization)는 물리적 컴퓨터 자원을 추상화하여 다수의 가상 환경을 만들어내는 기술입니다. 이를 통해 하나의 물리적 컴퓨터에서 여러 운영체제를 동시에 실행하거나, 자원을 더 효율적으로 활용할 수 있습니다.</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">가상화 유형</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">하드웨어 가상화</h4>
+                                <p class="mb-2">물리적 하드웨어 위에 가상 머신을 생성합니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>전가상화(Full Virtualization)</li>
+                                    <li>반가상화(Paravirtualization)</li>
+                                    <li>하드웨어 지원 가상화</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">운영체제 가상화</h4>
+                                <p class="mb-2">호스트 OS 위에서 여러 분리된 사용자 공간 인스턴스를 실행합니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>컨테이너 기반 가상화</li>
+                                    <li>리눅스 컨테이너 (LXC)</li>
+                                    <li>Docker, Kubernetes</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">메모리 가상화</h4>
+                                <p class="mb-2">물리적 메모리를 추상화하여 각 프로세스에 독립적인 가상 메모리 공간을 제공합니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>페이징(Paging)</li>
+                                    <li>세그먼테이션(Segmentation)</li>
+                                    <li>오버커밋(Overcommit)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">네트워크 가상화</h4>
+                                <p class="mb-2">물리적 네트워크 자원을 논리적으로 분할하거나 결합합니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>가상 LAN(VLAN)</li>
+                                    <li>소프트웨어 정의 네트워킹(SDN)</li>
+                                    <li>네트워크 기능 가상화(NFV)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">스토리지 가상화</h4>
+                                <p class="mb-2">물리적 저장 장치를 논리적 저장 단위로 추상화합니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>스토리지 영역 네트워크(SAN)</li>
+                                    <li>네트워크 결합 스토리지(NAS)</li>
+                                    <li>소프트웨어 정의 스토리지(SDS)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">데스크톱 가상화</h4>
+                                <p class="mb-2">사용자 데스크톱 환경을 서버에서 가상화하여 제공합니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>가상 데스크톱 인프라(VDI)</li>
+                                    <li>원격 데스크톱 서비스</li>
+                                    <li>애플리케이션 가상화</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">가상화 아키텍처</h3>
+                        <div class="diagram mb-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+                                    <h4 class="text-center mb-3 font-semibold">하이퍼바이저 기반 가상화</h4>
+                                    <div class="flex flex-col space-y-2">
+                                        <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded text-center">VM 1</div>
+                                        <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded text-center">VM 2</div>
+                                        <div class="p-2 bg-green-100 dark:bg-green-900 rounded text-center">하이퍼바이저</div>
+                                        <div class="p-2 bg-gray-200 dark:bg-gray-700 rounded text-center">하드웨어</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+                                    <h4 class="text-center mb-3 font-semibold">컨테이너 기반 가상화</h4>
+                                    <div class="flex flex-col space-y-2">
+                                        <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded text-center">컨테이너 1</div>
+                                        <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded text-center">컨테이너 2</div>
+                                        <div class="p-2 bg-yellow-100 dark:bg-yellow-900 rounded text-center">컨테이너 엔진</div>
+                                        <div class="p-2 bg-red-100 dark:bg-red-900 rounded text-center">호스트 OS</div>
+                                        <div class="p-2 bg-gray-200 dark:bg-gray-700 rounded text-center">하드웨어</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">가상화의 장점과 단점</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2 text-primary">장점</h4>
+                                <ul class="list-disc pl-6 space-y-1">
+                                    <li>하드웨어 자원 활용도 향상</li>
+                                    <li>서버 통합으로 비용 절감</li>
+                                    <li>격리를 통한 보안 강화</li>
+                                    <li>빠른 배포 및 확장성</li>
+                                    <li>장애 복구 및 가용성 향상</li>
+                                    <li>레거시 애플리케이션 지원</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2 text-primary">단점</h4>
+                                <ul class="list-disc pl-6 space-y-1">
+                                    <li>성능 오버헤드 발생</li>
+                                    <li>복잡한 관리 및 구성</li>
+                                    <li>호환성 문제 가능성</li>
+                                    <li>초기 설정 비용</li>
+                                    <li>단일 장애점 위험</li>
+                                    <li>라이센싱 복잡성</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">주요 가상화 솔루션</h3>
+                        <div class="table-container">
+                            <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
+                                <thead class="bg-gray-200 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="py-2 px-4 text-left">솔루션</th>
+                                        <th class="py-2 px-4 text-left">유형</th>
+                                        <th class="py-2 px-4 text-left">특징</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">VMware ESXi</td>
+                                        <td class="py-2 px-4">하이퍼바이저</td>
+                                        <td class="py-2 px-4">베어메탈 하이퍼바이저, 기업용 가상화 솔루션</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">Microsoft Hyper-V</td>
+                                        <td class="py-2 px-4">하이퍼바이저</td>
+                                        <td class="py-2 px-4">Windows Server 통합, Azure 연계</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">KVM</td>
+                                        <td class="py-2 px-4">하이퍼바이저</td>
+                                        <td class="py-2 px-4">리눅스 커널 기반, 오픈소스</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">Docker</td>
+                                        <td class="py-2 px-4">컨테이너</td>
+                                        <td class="py-2 px-4">경량화된 컨테이너화, 마이크로서비스 지원</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-4 font-medium">Kubernetes</td>
+                                        <td class="py-2 px-4">컨테이너 오케스트레이션</td>
+                                        <td class="py-2 px-4">컨테이너 자동화, 확장성, 자가 복구</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+                        <h3 class="text-xl font-semibold mb-3">구현 예시 - Docker 컨테이너 관리 (Shell Script)</h3>
+                        <pre><code class="language-bash">
+#!/bin/bash
+
+# Docker 컨테이너 관리 스크립트
+
+# 색상 정의
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# 함수: 도움말 출력
+show_help() {
+    echo -e "${BLUE}Docker 컨테이너 관리 스크립트${NC}"
+    echo "사용법: $0 [옵션]"
+    echo
+    echo "옵션:"
+    echo "  list              실행 중인 컨테이너 목록 표시"
+    echo "  list-all          모든 컨테이너 목록 표시"
+    echo "  create NAME IMAGE  새 컨테이너 생성"
+    echo "  start NAME        컨테이너 시작"
+    echo "  stop NAME         컨테이너 중지"
+    echo "  remove NAME       컨테이너 삭제"
+    echo "  stats             컨테이너 자원 사용량 모니터링"
+    echo "  logs NAME         컨테이너 로그 표시"
+    echo "  help              도움말 표시"
+    echo
+}
+
+# 함수: 컨테이너 목록 표시
+list_containers() {
+    echo -e "${GREEN}실행 중인 컨테이너 목록:${NC}"
+    docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
+}
+
+# 함수: 모든 컨테이너 목록 표시
+list_all_containers() {
+    echo -e "${GREEN}모든 컨테이너 목록:${NC}"
+    docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
+}
+
+# 함수: 새 컨테이너 생성
+create_container() {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo -e "${RED}오류: 컨테이너 이름과 이미지를 지정해야 합니다.${NC}"
+        echo "사용법: $0 create NAME IMAGE"
+        return 1
+    fi
+    
+    echo -e "${YELLOW}컨테이너 생성 중: $1 (이미지: $2)${NC}"
+    docker run -d --name "$1" "$2"
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}컨테이너가 성공적으로 생성되었습니다.${NC}"
+    else
+        echo -e "${RED}컨테이너 생성 실패.${NC}"
+    fi
+}
+
+# 함수: 컨테이너 시작
+start_container() {
+    if [ -z "$1" ]; then
+        echo -e "${RED}오류: 컨테이너 이름을 지정해야 합니다.${NC}"
+        echo "사용법: $0 start NAME"
+        return 1
+    fi
+    
+    echo -e "${YELLOW}컨테이너 시작 중: $1${NC}"
+    docker start "$1"
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}컨테이너가 성공적으로 시작되었습니다.${NC}"
+    else
+        echo -e "${RED}컨테이너 시작 실패.${NC}"
+    fi
+}
+
+# 함수: 컨테이너 중지
+stop_container() {
+    if [ -z "$1" ]; then
+        echo -e "${RED}오류: 컨테이너 이름을 지정해야 합니다.${NC}"
+        echo "사용법: $0 stop NAME"
+        return 1
+    fi
+    
+    echo -e "${YELLOW}컨테이너 중지 중: $1${NC}"
+    docker stop "$1"
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}컨테이너가 성공적으로 중지되었습니다.${NC}"
+    else
+        echo -e "${RED}컨테이너 중지 실패.${NC}"
+    fi
+}
+
+# 함수: 컨테이너 삭제
+remove_container() {
+    if [ -z "$1" ]; then
+        echo -e "${RED}오류: 컨테이너 이름을 지정해야 합니다.${NC}"
+        echo "사용법: $0 remove NAME"
+        return 1
+    fi
+    
+    echo -e "${YELLOW}컨테이너 삭제 중: $1${NC}"
+    docker rm "$1"
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}컨테이너가 성공적으로 삭제되었습니다.${NC}"
+    else
+        echo -e "${RED}컨테이너 삭제 실패. 컨테이너가 실행 중인지 확인하세요.${NC}"
+        echo -e "${YELLOW}실행 중인 컨테이너를 강제로 삭제하려면: docker rm -f $1${NC}"
+    fi
+}
+
+# 함수: 컨테이너 자원 사용량 모니터링
+show_stats() {
+    echo -e "${GREEN}컨테이너 자원 사용량 모니터링...${NC}"
+    echo -e "${YELLOW}종료하려면 Ctrl+C를 누르세요.${NC}"
+    docker stats
+}
+
+# 함수: 컨테이너 로그 표시
+show_logs() {
+    if [ -z "$1" ]; then
+        echo -e "${RED}오류: 컨테이너 이름을 지정해야 합니다.${NC}"
+        echo "사용법: $0 logs NAME"
+        return 1
+    fi
+    
+    echo -e "${GREEN}컨테이너 로그 표시: $1${NC}"
+    echo -e "${YELLOW}종료하려면 Ctrl+C를 누르세요.${NC}"
+    docker logs -f "$1"
+}
+
+# 메인 함수: 명령어 처리
+case "$1" in
+    list)
+        list_containers
+        ;;
+    list-all)
+        list_all_containers
+        ;;
+    create)
+        create_container "$2" "$3"
+        ;;
+    start)
+        start_container "$2"
+        ;;
+    stop)
+        stop_container "$2"
+        ;;
+    remove)
+        remove_container "$2"
+        ;;
+    stats)
+        show_stats
+        ;;
+    logs)
+        show_logs "$2"
+        ;;
+    help|*)
+        show_help
+        ;;
+esac
+
+exit 0
+                        </code></pre>
+                    </div>
+                </section>
+                
+                <!-- 분산 시스템 -->
+                <section id="distributed" class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300 dark:border-gray-700 text-primary">분산 시스템</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-semibold mb-3">정의</h3>
+                        <p class="mb-4">분산 시스템은 네트워크로 연결된 여러 컴퓨터나 노드가 서로 통신하며 자원을 공유하고 작업을 조율하여 하나의 통합된 시스템처럼 동작하는 컴퓨팅 환경입니다. 지리적으로 분산된 컴퓨터들이 공통된 목표를 위해 협력적으로 작동합니다.</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">분산 시스템의 특징</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">병렬성</h4>
+                                <p>여러 계산 작업이 동시에 실행되어 성능을 향상시킵니다.</p>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">확장성</h4>
+                                <p>시스템이 노드를 추가하거나 제거하면서 효율적으로 규모를 조정할 수 있습니다.</p>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">내결함성</h4>
+                                <p>일부 노드나 구성 요소가 실패해도 시스템 전체는 계속 작동합니다.</p>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">투명성</h4>
+                                <p>시스템의 복잡성을 사용자로부터 숨기고 단일 시스템처럼 보이게 합니다.</p>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">동시성</h4>
+                                <p>여러 클라이언트나 사용자가 동시에 자원에 접근하고 작업할 수 있습니다.</p>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">이질성</h4>
+                                <p>다양한 하드웨어, 소프트웨어, 네트워크로 구성된 환경에서 작동합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">분산 시스템 아키텍처</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">클라이언트-서버 모델</h4>
+                                <p class="mb-2">서비스를 제공하는 서버와 서비스를 요청하는 클라이언트로 구성됩니다.</p>
+                                <div class="diagram mt-2">
+                                    <div class="flex flex-col items-center">
+                                        <div class="flex justify-center gap-3 mb-2">
+                                            <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded">클라이언트 1</div>
+                                            <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded">클라이언트 2</div>
+                                        </div>
+                                        <div>↕️</div>
+                                        <div class="p-2 bg-green-100 dark:bg-green-900 rounded mt-2">서버</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">P2P (Peer-to-Peer) 모델</h4>
+                                <p class="mb-2">모든 참여자가 서비스를 제공하고 소비하는 역할을 동시에 수행합니다.</p>
+                                <div class="diagram mt-2">
+                                    <div class="flex justify-center gap-3 items-center">
+                                        <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded">노드 1</div>
+                                        <div>↔️</div>
+                                        <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded">노드 2</div>
+                                        <div>↔️</div>
+                                        <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded">노드 3</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">마이크로서비스 아키텍처</h4>
+                                <p class="mb-2">응용 프로그램을 독립적으로 배포 가능한 작은 서비스로 분해합니다.</p>
+                                <div class="diagram mt-2">
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div class="p-2 bg-yellow-100 dark:bg-yellow-900 rounded">인증 서비스</div>
+                                        <div class="p-2 bg-yellow-100 dark:bg-yellow-900 rounded">사용자 서비스</div>
+                                        <div class="p-2 bg-yellow-100 dark:bg-yellow-900 rounded">결제 서비스</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">분산 데이터베이스</h4>
+                                <p class="mb-2">데이터가 여러 위치에 분산되어 저장되고 관리됩니다.</p>
+                                <div class="diagram mt-2">
+                                    <div class="flex flex-col items-center">
+                                        <div class="p-2 bg-red-100 dark:bg-red-900 rounded mb-2">중앙 코디네이터</div>
+                                        <div>↕️</div>
+                                        <div class="flex justify-center gap-3 mt-2">
+                                            <div class="p-2 bg-red-100 dark:bg-red-900 rounded">DB 노드 1</div>
+                                            <div class="p-2 bg-red-100 dark:bg-red-900 rounded">DB 노드 2</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">분산 시스템 도전 과제</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">동기화 및 일관성</h4>
+                                <p>여러 노드 간에 데이터 일관성을 유지하고 동기화하는 문제입니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>2단계 커밋 프로토콜</li>
+                                    <li>합의(Consensus) 알고리즘</li>
+                                    <li>최종 일관성(Eventual Consistency)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">내결함성과 가용성</h4>
+                                <p>장애에도 불구하고 시스템이 계속 작동하도록 보장하는 문제입니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>복제(Replication)</li>
+                                    <li>장애 감지(Failure Detection)</li>
+                                    <li>자동 복구(Auto Recovery)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">보안</h4>
+                                <p>분산된 환경에서 데이터와 통신을 보호하는 문제입니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>인증 및 권한 부여</li>
+                                    <li>암호화</li>
+                                    <li>접근 제어</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">성능 및 확장성</h4>
+                                <p>대규모 데이터와 요청을 효율적으로 처리하는 문제입니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>로드 밸런싱</li>
+                                    <li>캐싱</li>
+                                    <li>파티셔닝(Partitioning)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">분산 합의 알고리즘</h3>
+                        <div class="table-container">
+                            <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
+                                <thead class="bg-gray-200 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="py-2 px-4 text-left">알고리즘</th>
+                                        <th class="py-2 px-4 text-left">설명</th>
+                                        <th class="py-2 px-4 text-left">특징</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">Paxos</td>
+                                        <td class="py-2 px-4">노드 간의 합의에 도달하기 위한 메시지 기반 프로토콜</td>
+                                        <td class="py-2 px-4">복잡성 높음, 비잔틴 장애에 취약</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">Raft</td>
+                                        <td class="py-2 px-4">리더 선출 및 로그 복제를 통한 합의 알고리즘</td>
+                                        <td class="py-2 px-4">이해 및 구현 용이, 안정성 높음</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">PBFT</td>
+                                        <td class="py-2 px-4">비잔틴 장애 허용 알고리즘</td>
+                                        <td class="py-2 px-4">악의적 노드 존재 시에도 작동, 높은 오버헤드</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-4 font-medium">Gossip</td>
+                                        <td class="py-2 px-4">소문 퍼뜨리기 방식으로 정보를 전파하는 프로토콜</td>
+                                        <td class="py-2 px-4">확장성 높음, 최종 일관성 보장</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+                        <h3 class="text-xl font-semibold mb-3">구현 예시 - 간단한 분산 메시지 시스템 (Python)</h3>
+                        <pre><code class="language-python">
+import socket
+import threading
+import json
+import time
+import random
+import uuid
+
+class Node:
+    def __init__(self, host, port, node_id=None):
+        self.host = host
+        self.port = port
+        self.id = node_id or str(uuid.uuid4())
+        self.peers = {}  # {peer_id: (host, port)}
+        self.messages = []
+        self.lock = threading.Lock()
+        self.running = False
+        self.socket = None
+    
+    def start(self):
+        """노드 시작 및 수신 대기"""
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.bind((self.host, self.port))
+        self.running = True
+        
+        # 메시지 수신 스레드 시작
+        receive_thread = threading.Thread(target=self.receive_messages)
+        receive_thread.daemon = True
+        receive_thread.start()
+        
+        # 주기적인 가십 전파 스레드 시작
+        gossip_thread = threading.Thread(target=self.gossip_messages)
+        gossip_thread.daemon = True
+        gossip_thread.start()
+        
+        print(f"노드 시작: ID={self.id}, {self.host}:{self.port}")
+    
+    def stop(self):
+        """노드 중지"""
+        self.running = False
+        if self.socket:
+            self.socket.close()
+    
+    def add_peer(self, peer_id, host, port):
+        """피어 노드 추가"""
+        self.peers[peer_id] = (host, port)
+        print(f"피어 추가: ID={peer_id}, {host}:{port}")
+    
+    def remove_peer(self, peer_id):
+        """피어 노드 제거"""
+        if peer_id in self.peers:
+            del self.peers[peer_id]
+            print(f"피어 제거: ID={peer_id}")
+    
+    def broadcast_message(self, message):
+        """모든 피어에게 메시지 브로드캐스트"""
+        if not isinstance(message, dict):
+            message = {"type": "USER", "data": message, "sender": self.id}
+        
+        # 메시지에 고유 ID와 타임스탬프 추가
+        if "id" not in message:
+            message["id"] = str(uuid.uuid4())
+        if "timestamp" not in message:
+            message["timestamp"] = time.time()
+        
+        # 자신의 메시지 목록에 추가
+        with self.lock:
+            if not any(msg["id"] == message["id"] for msg in self.messages):
+                self.messages.append(message)
+                print(f"메시지 추가: {message}")
+        
+        # 모든 피어에게 전송
+        for peer_id, (host, port) in self.peers.items():
+            self.send_to_peer(peer_id, message)
+    
+    def send_to_peer(self, peer_id, message):
+        """특정 피어에게 메시지 전송"""
+        if peer_id in self.peers:
+            try:
+                host, port = self.peers[peer_id]
+                message_bytes = json.dumps(message).encode('utf-8')
+                self.socket.sendto(message_bytes, (host, port))
+                print(f"메시지 전송: 대상={peer_id}, 메시지={message}")
+            except Exception as e:
+                print(f"전송 오류: {e}")
+    
+    def receive_messages(self):
+        """메시지 수신 처리"""
+        while self.running:
+            try:
+                data, addr = self.socket.recvfrom(4096)
+                message = json.loads(data.decode('utf-8'))
+                print(f"메시지 수신: 출처={addr}, 메시지={message}")
+                
+                # 받은 메시지가 이미 있는지 확인
+                with self.lock:
+                    if not any(msg["id"] == message["id"] for msg in self.messages):
+                        self.messages.append(message)
+                        
+                        # 일반 메시지 처리
+                        if message.get("type") == "USER":
+                            print(f"사용자 메시지: {message['data']} (발신자: {message['sender']})")
+                        
+                        # 노드 발견 메시지 처리
+                        elif message.get("type") == "DISCOVERY":
+                            sender_id = message.get("sender")
+                            sender_host, sender_port = addr
+                            
+                            # 발견된 노드 추가
+                            if sender_id and sender_id != self.id:
+                                self.add_peer(sender_id, sender_host, sender_port)
+                                
+                                # 응답 메시지 전송
+                                response = {
+                                    "type": "DISCOVERY_RESPONSE",
+                                    "sender": self.id,
+                                    "id": str(uuid.uuid4()),
+                                    "timestamp": time.time()
+                                }
+                                self.send_to_peer(sender_id, response)
+                        
+                        # 다른 노드로부터 받은 메시지 재전송 (Gossip 프로토콜)
+                        if message.get("sender") != self.id:
+                            # 무작위로 선택된 일부 피어에게만 전달
+                            selected_peers = random.sample(list(self.peers.keys()), 
+                                                          min(2, len(self.peers))) if self.peers else []
+                            for peer_id in selected_peers:
+                                self.send_to_peer(peer_id, message)
+            except json.JSONDecodeError:
+                print("잘못된 JSON 형식")
+            except Exception as e:
+                if self.running:
+                    print(f"수신 오류: {e}")
+    
+    def gossip_messages(self):
+        """주기적으로 가십 알고리즘을 통해 메시지 전파"""
+        while self.running:
+            time.sleep(5)  # 5초마다 실행
+            
+            if not self.peers:
+                continue
+                
+            # 무작위 피어 선택
+            if self.peers:
+                peer_id = random.choice(list(self.peers.keys()))
+                
+                # 모든 메시지 전파
+                with self.lock:
+                    for message in self.messages:
+                        # 최근 메시지만 전파 (30초 이내)
+                        if time.time() - message.get("timestamp", 0) < 30:
+                            self.send_to_peer(peer_id, message)
+    
+    def discover_peers(self, bootstrap_nodes):
+        """부트스트랩 노드를 통해 네트워크의 다른 노드 발견"""
+        discovery_message = {
+            "type": "DISCOVERY",
+            "sender": self.id,
+            "id": str(uuid.uuid4()),
+            "timestamp": time.time()
+        }
+        
+        for host, port in bootstrap_nodes:
+            try:
+                message_bytes = json.dumps(discovery_message).encode('utf-8')
+                self.socket.sendto(message_bytes, (host, port))
+                print(f"발견 메시지 전송: 대상={host}:{port}")
+            except Exception as e:
+                print(f"발견 오류: {e}")
+
+# 사용 예시
+def run_node(host, port, bootstrap_nodes=None):
+    node = Node(host, port)
+    node.start()
+    
+    try:
+        # 부트스트랩 노드가 있으면 피어 발견 시도
+        if bootstrap_nodes:
+            node.discover_peers(bootstrap_nodes)
+        
+        # 간단한 커맨드 라인 인터페이스
+        while True:
+            cmd = input("\n명령어 (send/list/peers/exit): ").strip()
+            
+            if cmd == "send":
+                message = input("메시지 입력: ")
+                node.broadcast_message(message)
+            elif cmd == "list":
+                print("\n메시지 목록:")
+                with node.lock:
+                    for msg in node.messages:
+                        if msg.get("type") == "USER":
+                            print(f"[{msg.get('sender')}] {msg.get('data')}")
+            elif cmd == "peers":
+                print("\n연결된 피어:")
+                for peer_id, (host, port) in node.peers.items():
+                    print(f"ID: {peer_id}, 주소: {host}:{port}")
+            elif cmd == "exit":
+                break
+            else:
+                print("알 수 없는 명령어")
+    
+    finally:
+        node.stop()
+
+if __name__ == "__main__":
+    import sys
+    
+    if len(sys.argv) < 3:
+        print("사용법: python script.py <host> <port> [bootstrap_host bootstrap_port]")
+        sys.exit(1)
+    
+    host = sys.argv[1]
+    port = int(sys.argv[2])
+    
+    bootstrap_nodes = []
+    if len(sys.argv) >= 5:
+        bootstrap_host = sys.argv[3]
+        bootstrap_port = int(sys.argv[4])
+        bootstrap_nodes.append((bootstrap_host, bootstrap_port))
+    
+    run_node(host, port, bootstrap_nodes)
+                        </code></pre>
+                    </div>
+                </section>
+                
+                <!-- 보안과 보호 -->
+                <section id="security" class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300 dark:border-gray-700 text-primary">보안과 보호</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-semibold mb-3">정의</h3>
+                        <p class="mb-4">운영체제 보안과 보호는 시스템과 사용자 데이터를 무단 접근, 변경, 파괴로부터 보호하기 위한 메커니즘입니다. 이는 시스템의 무결성, 기밀성, 가용성을 유지하기 위한 필수적인 기능입니다.</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">보안 목표</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">기밀성 (Confidentiality)</h4>
+                                <p>인가된 사용자만 정보에 접근할 수 있도록 보장합니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>암호화</li>
+                                    <li>접근 제어</li>
+                                    <li>인증</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">무결성 (Integrity)</h4>
+                                <p>데이터가 무단으로 변경되지 않도록 보장합니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>디지털 서명</li>
+                                    <li>해시 함수</li>
+                                    <li>감사 추적</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">가용성 (Availability)</h4>
+                                <p>정보와 시스템이 필요할 때 접근 가능하도록 보장합니다.</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>백업 및 복구</li>
+                                    <li>중복성</li>
+                                    <li>DoS 방어</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">인증과 권한 부여</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">인증 (Authentication)</h4>
+                                <p class="mb-2">사용자의 신원을 확인하는 과정입니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>비밀번호 (지식 기반)</li>
+                                    <li>생체 인식 (특성 기반)</li>
+                                    <li>스마트 카드/토큰 (소유 기반)</li>
+                                    <li>다중 인증 (MFA)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">권한 부여 (Authorization)</h4>
+                                <p class="mb-2">인증된 사용자에게 시스템 자원에 대한 접근 권한을 부여하는 과정입니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>접근 제어 목록 (ACL)</li>
+                                    <li>역할 기반 접근 제어 (RBAC)</li>
+                                    <li>강제적 접근 제어 (MAC)</li>
+                                    <li>임의적 접근 제어 (DAC)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">접근 제어 메커니즘</h3>
+                        <div class="table-container">
+                            <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
+                                <thead class="bg-gray-200 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="py-2 px-4 text-left">접근 제어 유형</th>
+                                        <th class="py-2 px-4 text-left">설명</th>
+                                        <th class="py-2 px-4 text-left">예시</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">임의적 접근 제어 (DAC)</td>
+                                        <td class="py-2 px-4">객체 소유자가 접근 권한을 결정</td>
+                                        <td class="py-2 px-4">Unix 파일 권한</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">강제적 접근 제어 (MAC)</td>
+                                        <td class="py-2 px-4">시스템이 보안 레벨에 따라 접근 통제</td>
+                                        <td class="py-2 px-4">SELinux, 군사 시스템</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-2 px-4 font-medium">역할 기반 접근 제어 (RBAC)</td>
+                                        <td class="py-2 px-4">사용자 역할에 따라 권한 할당</td>
+                                        <td class="py-2 px-4">Windows Active Directory</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-4 font-medium">속성 기반 접근 제어 (ABAC)</td>
+                                        <td class="py-2 px-4">다양한 속성 기반으로 접근 제어</td>
+                                        <td class="py-2 px-4">XACML, 클라우드 환경</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">보안 위협과 대응</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">악성 소프트웨어</h4>
+                                <p class="mb-2">컴퓨터 시스템에 손상을 입히는 소프트웨어입니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>바이러스: 자기 복제 프로그램</li>
+                                    <li>웜: 독립적으로 전파되는 프로그램</li>
+                                    <li>트로이 목마: 정상 프로그램으로 위장</li>
+                                    <li>랜섬웨어: 데이터 암호화 후 몸값 요구</li>
+                                </ul>
+                                <div class="mt-2 font-medium">대응 방안:</div>
+                                <ul class="list-disc pl-6">
+                                    <li>안티바이러스 소프트웨어</li>
+                                    <li>패치 및 업데이트</li>
+                                    <li>샌드박스 실행 환경</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">네트워크 공격</h4>
+                                <p class="mb-2">네트워크를 통한 시스템 침투 시도입니다.</p>
+                                <ul class="list-disc pl-6">
+                                    <li>DoS/DDoS: 서비스 거부 공격</li>
+                                    <li>스니핑: 네트워크 트래픽 도청</li>
+                                    <li>스푸핑: 네트워크 주소 위조</li>
+                                    <li>중간자 공격: 통신 가로채기</li>
+                                </ul>
+                                <div class="mt-2 font-medium">대응 방안:</div>
+                                <ul class="list-disc pl-6">
+                                    <li>방화벽 및 IDS/IPS</li>
+                                    <li>암호화된 통신 (SSL/TLS)</li>
+                                    <li>네트워크 모니터링</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-3">암호화</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">대칭 키 암호화</h4>
+                                <p class="mb-2">동일한 키로 암호화와 복호화를 수행합니다.</p>
+                                <div class="diagram mt-2 mb-3">
+                                    <div class="flex flex-col items-center">
+                                        <div class="p-1 bg-blue-100 dark:bg-blue-900 rounded mb-1">원본 데이터</div>
+                                        <div>↓ 대칭 키</div>
+                                        <div class="p-1 bg-purple-100 dark:bg-purple-900 rounded my-1">암호화된 데이터</div>
+                                        <div>↓ 동일한 대칭 키</div>
+                                        <div class="p-1 bg-blue-100 dark:bg-blue-900 rounded mt-1">원본 데이터</div>
+                                    </div>
+                                </div>
+                                <ul class="list-disc pl-6">
+                                    <li>AES, DES, 3DES</li>
+                                    <li>빠른 처리 속도</li>
+                                    <li>키 분배 문제 존재</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover-card">
+                                <h4 class="font-semibold text-lg mb-2 text-primary">비대칭 키 암호화</h4>
+                                <p class="mb-2">공개 키와 개인 키 쌍을 사용합니다.</p>
+                                <div class="diagram mt-2 mb-3">
+                                    <div class="flex flex-col items-center">
+                                        <div class="p-1 bg-blue-100 dark:bg-blue-900 rounded mb-1">원본 데이터</div>
+                                        <div>↓ 공개 키</div>
+                                        <div class="p-1 bg-purple-100 dark:bg-purple-900 rounded my-1">암호화된 데이터</div>
+                                        <div>↓ 개인 키</div>
+                                        <div class="p-1 bg-blue-100 dark:bg-blue-900 rounded mt-1">원본 데이터</div>
+                                    </div>
+                                </div>
+                                <ul class="list-disc pl-6">
+                                    <li>RSA, ECC, DSA</li>
+                                    <li>안전한 키 교환</li>
+                                    <li>처리 속도 느림</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+                        <h3 class="text-xl font-semibold mb-3">구현 예시 - 간단한 파일 암호화 도구 (Python)</h3>
+                        <pre><code class="language-python">
+from cryptography.fernet import Fernet
+import os
+import getpass
+import base64
+import hashlib
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
+class SimpleFileCrypto:
+    """간단한 파일 암호화/복호화 도구"""
+    
+    @staticmethod
+    def generate_key_from_password(password, salt=None):
+        """비밀번호에서 암호화 키 생성"""
+        if salt is None:
+            salt = os.urandom(16)
+        
+        # 비밀번호 기반 키 유도 함수 (PBKDF2)
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=salt,
+            iterations=100000,
+        )
+        key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
+        return key, salt
+    
+    @staticmethod
+    def encrypt_file(input_file, output_file=None, password=None):
+        """파일 암호화"""
+        if output_file is None:
+            output_file = input_file + '.encrypted'
+        
+        # 비밀번호가 없으면 입력 요청
+        if password is None:
+            password = getpass.getpass("암호화에 사용할 비밀번호 입력: ")
+        
+        # 소금값 생성 및 키 유도
+        salt = os.urandom(16)
+        key, _ = SimpleFileCrypto.generate_key_from_password(password, salt)
+        cipher = Fernet(key)
+        
+        try:
+            # 파일 읽기
+            with open(input_file, 'rb') as f:
+                data = f.read()
+            
+            # 데이터 암호화
+            encrypted_data = cipher.encrypt(data)
+            
+            # 암호화된 데이터 저장 (소금값 + 암호화된 데이터)
+            with open(output_file, 'wb') as f:
+                f.write(salt)
+                f.write(encrypted_data)
+            
+            print(f"파일이 성공적으로 암호화되었습니다: {output_file}")
+            return True
+        except Exception as e:
+            print(f"암호화 오류: {e}")
+            return False
+    
+    @staticmethod
+    def decrypt_file(input_file, output_file=None, password=None):
+        """파일 복호화"""
+        if output_file is None:
+            # .encrypted 확장자 제거
+            if input_file.endswith('.encrypted'):
+                output_file = input_file[:-10]
+            else:
+                output_file = input_file + '.decrypted'
+        
+        # 비밀번호가 없으면 입력 요청
+        if password is None:
+            password = getpass.getpass("복호화에 사용할 비밀번호 입력: ")
+        
+        try:
+            # 파일 읽기
+            with open(input_file, 'rb') as f:
+                # 소금값 읽기 (처음 16바이트)
+                salt = f.read(16)
+                # 암호화된 데이터 읽기
+                encrypted_data = f.read()
+            
+            # 키 유도
+            key, _ = SimpleFileCrypto.generate_key_from_password(password, salt)
+            cipher = Fernet(key)
+            
+            # 데이터 복호화
+            try:
+                decrypted_data = cipher.decrypt(encrypted_data)
+            except Exception:
+                print("잘못된 비밀번호 또는 손상된 파일입니다.")
+                return False
+            
+            # 복호화된 데이터 저장
+            with open(output_file, 'wb') as f:
+                f.write(decrypted_data)
+            
+            print(f"파일이 성공적으로 복호화되었습니다: {output_file}")
+            return True
+        except Exception as e:
+            print(f"복호화 오류: {e}")
+            return False
+    
+    @staticmethod
+    def calculate_file_hash(file_path):
+        """파일의 SHA-256 해시 계산"""
+        sha256_hash = hashlib.sha256()
+        
+        with open(file_path, 'rb') as f:
+            # 파일을 청크 단위로 읽어 해시 계산
+            for byte_block in iter(lambda: f.read(4096), b""):
+                sha256_hash.update(byte_block)
+        
+        return sha256_hash.hexdigest()
+    
+    @staticmethod
+    def verify_file_integrity(file_path, expected_hash):
+        """파일 무결성 검증"""
+        actual_hash = SimpleFileCrypto.calculate_file_hash(file_path)
+        is_valid = actual_hash == expected_hash
+        
+        if is_valid:
+            print(f"파일 무결성 검증 성공: {file_path}")
+        else:
+            print(f"파일 무결성 검증 실패: {file_path}")
+            print(f"기대 해시: {expected_hash}")
+            print(f"실제 해시: {actual_hash}")
+        
+        return is_valid
+
+def main():
+    """간단한 명령줄 인터페이스"""
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='파일 암호화/복호화 도구')
+    parser.add_argument('action', choices=['encrypt', 'decrypt', 'hash', 'verify'],
+                        help='수행할 작업')
+    parser.add_argument('input', help='입력 파일 경로')
+    parser.add_argument('-o', '--output', help='출력 파일 경로')
+    parser.add_argument('-p', '--password', help='암호화/복호화 비밀번호')
+    parser.add_argument('-H', '--hash', help='검증할 해시 값 (verify 작업시)')
+    
+    args = parser.parse_args()
+    
+    if args.action == 'encrypt':
+        SimpleFileCrypto.encrypt_file(args.input, args.output, args.password)
+    
+    elif args.action == 'decrypt':
+        SimpleFileCrypto.decrypt_file(args.input, args.output, args.password)
+    
+    elif args.action == 'hash':
+        file_hash = SimpleFileCrypto.calculate_file_hash(args.input)
+        print(f"파일 해시 (SHA-256): {file_hash}")
+    
+    elif args.action == 'verify':
+        if not args.hash:
+            expected_hash = input("검증할 해시 값 입력: ")
+        else:
+            expected_hash = args.hash
+        
+        SimpleFileCrypto.verify_file_integrity(args.input, expected_hash)
+
+if __name__ == "__main__":
+    main()
+                        </code></pre>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    <footer class="bg-white dark:bg-gray-800 shadow-md mt-8 py-6">
+        <div class="container mx-auto px-4">
+            <p class="text-center text-gray-600 dark:text-gray-400 text-sm">
+                모든 자료들은 상업적 이용이 불가합니다.
+                <a
+                    href="https://github.com/Metronon"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center hover:text-gray-800 dark:hover:text-white text-sm"
+                >
+                    <!-- GitHub SVG 아이콘 -->
+                    <svg
+                        class="w-5 h-5 mr-1 inline-block align-middle"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.66-.22.66-.48 
+                    0-.46-.01-1.96-.02-3.84-2.78.61-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 
+                    1.01.07 1.54 1.04 1.54 1.04.9 1.54 2.36 1.09 2.94.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.95 
+                    0-1.09.39-1.99 1.03-2.7-.1-.25-.45-1.28.1-2.67 0 0 .84-.27 2.75 1.02A9.65 9.65 0 0 1 12 6.8c.85.004 1.71.115 
+                    2.5.337 1.91-1.29 2.75-1.02 2.75-1.02.55 1.39.2 2.42.1 2.67.64.71 1.03 1.61 1.03 2.7 0 3.85-2.34 4.7-4.57 4.95.37.32.7.95.7 
+                    1.92 0 1.38-.01 2.5-.01 2.84 0 .26.17.58.67.48A10.01 10.01 0 0 0 22 12c0-5.52-4.48-10-10-10z"
+                        />
+                    </svg>
+                    Metronon
+                </a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

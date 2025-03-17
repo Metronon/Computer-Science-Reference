@@ -1,0 +1,2295 @@
+<!DOCTYPE html>
+<html lang="ko" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로그래밍 자료구조 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                    }
+                }
+            }
+        }
+
+        // 다크 모드 감지 및 적용
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // 테마 전환 함수
+        function toggleDarkMode() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
+            }
+        }
+
+        // 스크롤 이동 함수
+        function scrollToSection(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                window.scrollTo({
+                    top: element.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        pre {
+            overflow-x: auto;
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .dark pre {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-200">
+    <!-- 네비게이션 바 -->
+    <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-primary">CS 지식 탐구</h1>
+                </div>
+                <nav class="flex items-center space-x-6">
+                    <a href="메인 페이지.html" class="font-medium hover:text-primary transition-colors">홈</a>
+                    <a href="자료구조.html" class="font-medium hover:text-primary transition-colors text-primary">자료구조</a>
+                    <a href="네트워크.html" class="font-medium hover:text-primary transition-colors">네트워크</a>
+                    <a href="운영체제.html" class="font-medium hover:text-primary transition-colors">운영체제</a>
+                    <a href="DB.html" class="font-medium hover:text-primary transition-colors">DB</a>
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                        </svg>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row">
+        <!-- 사이드바 -->
+        <aside class="w-full md:w-64 mb-8 md:mb-0 md:mr-8">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-5 sticky top-24">
+                <h2 class="text-lg font-bold mb-4 text-primary">자료구조 목록</h2>
+                <nav class="space-y-2">
+                    <a href="#intro" onclick="scrollToSection('intro')" class="block hover:text-primary">자료구조 소개</a>
+                    <a href="#array" onclick="scrollToSection('array')" class="block hover:text-primary">배열 (Array)</a>
+                    <a href="#linkedlist" onclick="scrollToSection('linkedlist')" class="block hover:text-primary">연결 리스트 (Linked List)</a>
+                    <a href="#stack" onclick="scrollToSection('stack')" class="block hover:text-primary">스택 (Stack)</a>
+                    <a href="#queue" onclick="scrollToSection('queue')" class="block hover:text-primary">큐 (Queue)</a>
+                    <a href="#tree" onclick="scrollToSection('tree')" class="block hover:text-primary">트리 (Tree)</a>
+                    <a href="#bst" onclick="scrollToSection('bst')" class="block hover:text-primary">이진 검색 트리 (BST)</a>
+                    <a href="#graph" onclick="scrollToSection('graph')" class="block hover:text-primary">그래프 (Graph)</a>
+                    <a href="#hashtable" onclick="scrollToSection('hashtable')" class="block hover:text-primary">해시 테이블 (Hash Table)</a>
+                    <a href="#heap" onclick="scrollToSection('heap')" class="block hover:text-primary">힙 (Heap)</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="flex-1">
+            <h1 class="text-3xl font-bold mb-8 text-primary">프로그래밍 자료구조</h1>
+
+            <!-- 자료구조 소개 -->
+            <section id="intro" class="mb-12 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold mb-4">자료구조 소개</h2>
+                <p class="mb-4">자료구조(Data Structure)는 데이터를 효율적으로 저장, 관리, 접근하기 위한 방법입니다. 올바른 자료구조를 선택하면 알고리즘의 성능과 효율성이 크게 향상됩니다.</p>
+                <p class="mb-2">자료구조를 선택할 때는 다음 사항을 고려해야 합니다:</p>
+                <ul class="list-disc pl-6 mb-4 space-y-2">
+                    <li><strong>시간 복잡도 (Time Complexity):</strong> 연산 수행에 걸리는 시간</li>
+                    <li><strong>공간 복잡도 (Space Complexity):</strong> 필요한 메모리 공간</li>
+                    <li><strong>자료의 변경 가능성 (Mutability):</strong> 자료 변경이 필요한지 여부</li>
+                    <li><strong>접근 패턴 (Access Pattern):</strong> 데이터를 어떻게 읽고 쓸 것인지</li>
+                </ul>
+                <p>각 자료구조는 특정 상황에서 장점과 단점을 가지고 있으며, 문제 해결을 위해 적절한 자료구조를 선택하는 것이 중요합니다.</p>
+            </section>
+
+                <!-- 배열 -->
+                <section id="array" class="mb-12">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">배열 (Array)</h2>
+                    <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">정의</h3>
+                            <p>배열은 같은 타입의 데이터를 연속된 메모리 공간에 저장하는 자료구조입니다. 각 데이터는 인덱스(index)를 통해 접근할 수 있습니다.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">시각화</h3>
+                            <div id="array-visual" class="my-4 flex justify-center">
+                                <div class="array-box">10</div>
+                                <div class="array-box">20</div>
+                                <div class="array-box">30</div>
+                                <div class="array-box">40</div>
+                                <div class="array-box">50</div>
+                            </div>
+                            <p class="text-center text-sm text-gray-600 dark:text-gray-400 mb-4">인덱스: 0, 1, 2, 3, 4</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">주요 연산 및 시간 복잡도</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>접근(Access)</strong>: O(1) - 인덱스를 통한 즉시 접근</li>
+                                <li><strong>검색(Search)</strong>: O(n) - 정렬되지 않은 배열에서 선형 검색</li>
+                                <li><strong>삽입(Insertion)</strong>: O(n) - 중간에 삽입 시 요소들을 이동</li>
+                                <li><strong>삭제(Deletion)</strong>: O(n) - 중간에서 삭제 시 요소들을 이동</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">장점과 단점</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-medium text-green-600 dark:text-green-400 mb-2">장점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>인덱스로 빠른 접근 가능</li>
+                                        <li>간단한 구현</li>
+                                        <li>메모리 사용이 효율적</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-red-600 dark:text-red-400 mb-2">단점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>크기가 고정됨 (정적 배열의 경우)</li>
+                                        <li>중간 삽입/삭제가 비효율적</li>
+                                        <li>연속된 메모리 할당 필요</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">구현 예시</h3>
+                            <pre><code class="language-java">// Java에서 배열 사용 예시
+import java.util.Arrays;
+
+public class ArrayExample {
+    public static void main(String[] args) {
+        // 배열 생성
+        int[] numbers = {10, 20, 30, 40, 50};
+        
+        // 접근
+        System.out.println(numbers[2]); // 30
+        
+        // 검색
+        int searchValue = 40;
+        int index = -1;
+        for (int i = 0; i < numbers.length; i++) {
+            if (numbers[i] == searchValue) {
+                index = i;
+                break;
+            }
+        }
+        System.out.println("40의 인덱스: " + index); // 3
+        
+        // 삽입 (Java에서는 배열 크기가 고정되어 있어 새 배열을 만들어야 함)
+        int insertPos = 2;
+        int valueToInsert = 25;
+        int[] newNumbers = new int[numbers.length + 1];
+        
+        for (int i = 0, j = 0; i < newNumbers.length; i++) {
+            if (i == insertPos) {
+                newNumbers[i] = valueToInsert;
+            } else {
+                newNumbers[i] = numbers[j++];
+            }
+        }
+        numbers = newNumbers;
+        System.out.println("삽입 후: " + Arrays.toString(numbers)); // [10, 20, 25, 30, 40, 50]
+        
+        // 삭제 (마찬가지로 새 배열이 필요)
+        int deletePos = 1;
+        int[] afterDelete = new int[numbers.length - 1];
+        
+        for (int i = 0, j = 0; i < numbers.length; i++) {
+            if (i != deletePos) {
+                afterDelete[j++] = numbers[i];
+            }
+        }
+        numbers = afterDelete;
+        System.out.println("삭제 후: " + Arrays.toString(numbers)); // [10, 25, 30, 40, 50]
+    }
+}</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">실제 사용 사례</h3>
+                            <ul class="list-disc list-inside">
+                                <li>목록 표시 (리스트 뷰, 테이블)</li>
+                                <li>임시 데이터 저장</li>
+                                <li>다른 복잡한 데이터 구조의 기반</li>
+                                <li>간단한 버퍼 관리</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 연결 리스트 -->
+                <section id="linkedlist" class="mb-12">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">연결 리스트 (Linked List)</h2>
+                    <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">정의</h3>
+                            <p>연결 리스트는 각 노드가 데이터와 다음 노드를 가리키는 포인터로 구성된 선형 자료구조입니다. 메모리에 연속적으로 저장되지 않으며, 동적으로 크기가 변할 수 있습니다.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">시각화</h3>
+                            <div id="linkedlist-visual" class="my-4 flex justify-center flex-wrap">
+                                <div class="node">
+                                    <div class="node-item">10</div>
+                                    <div class="node-arrow">→</div>
+                                </div>
+                                <div class="node">
+                                    <div class="node-item">20</div>
+                                    <div class="node-arrow">→</div>
+                                </div>
+                                <div class="node">
+                                    <div class="node-item">30</div>
+                                    <div class="node-arrow">→</div>
+                                </div>
+                                <div class="node">
+                                    <div class="node-item">40</div>
+                                    <div class="node-arrow">→</div>
+                                </div>
+                                <div class="node">
+                                    <div class="node-item">50</div>
+                                    <div class="node-arrow">⌀</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">주요 연산 및 시간 복잡도</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>접근(Access)</strong>: O(n) - 순차적 접근이 필요</li>
+                                <li><strong>검색(Search)</strong>: O(n) - 선형 검색</li>
+                                <li><strong>삽입(Insertion)</strong>: O(1) - 위치를 알고 있다면 빠른 삽입</li>
+                                <li><strong>삭제(Deletion)</strong>: O(1) - 위치를 알고 있다면 빠른 삭제</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">장점과 단점</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-medium text-green-600 dark:text-green-400 mb-2">장점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>동적 크기 조정</li>
+                                        <li>삽입 및 삭제가 효율적</li>
+                                        <li>메모리 오버헤드 없음</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-red-600 dark:text-red-400 mb-2">단점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>특정 인덱스로의 직접 접근 불가</li>
+                                        <li>포인터를 위한 추가 메모리 필요</li>
+                                        <li>캐시 효율성이 낮음</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">연결 리스트 종류</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>단일 연결 리스트(Singly Linked List)</strong>: 각 노드가 다음 노드로의 포인터만 가짐</li>
+                                <li><strong>이중 연결 리스트(Doubly Linked List)</strong>: 각 노드가 이전 노드와 다음 노드로의 포인터를 가짐</li>
+                                <li><strong>순환 연결 리스트(Circular Linked List)</strong>: 마지막 노드가 첫 번째 노드를 가리킴</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">구현 예시</h3>
+                            <pre><code class="language-java">public class Node {
+    int data;
+    Node next;
+    
+    public Node(int data) {
+        this.data = data;
+        this.next = null;
+    }
+}
+
+public class LinkedList {
+    private Node head;
+    private int size;
+    
+    public LinkedList() {
+        this.head = null;
+        this.size = 0;
+    }
+    
+    // 맨 끝에 노드 추가
+    public void append(int data) {
+        Node newNode = new Node(data);
+        
+        if (head == null) {
+            head = newNode;
+        } else {
+            Node current = head;
+            while (current.next != null) {
+                current = current.next;
+            }
+            current.next = newNode;
+        }
+        
+        size++;
+    }
+    
+    // 특정 위치에 노드 삽입
+    public boolean insertAt(int data, int index) {
+        if (index < 0 || index > size) {
+            return false;
+        }
+        
+        Node newNode = new Node(data);
+        
+        if (index == 0) {
+            newNode.next = head;
+            head = newNode;
+        } else {
+            Node current = head;
+            Node previous = null;
+            int count = 0;
+            
+            while (count < index) {
+                previous = current;
+                current = current.next;
+                count++;
+            }
+            
+            newNode.next = current;
+            previous.next = newNode;
+        }
+        
+        size++;
+        return true;
+    }
+    
+    // 리스트 출력
+    public void display() {
+        Node current = head;
+        while (current != null) {
+            System.out.print(current.data + " -> ");
+            current = current.next;
+        }
+        System.out.println("null");
+    }
+    
+    // 리스트 크기 반환
+    public int size() {
+        return size;
+    }
+}</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">실제 사용 사례</h3>
+                            <ul class="list-disc list-inside">
+                                <li>이미지 뷰어와 같은 앞뒤 탐색 기능</li>
+                                <li>음악 플레이리스트 구현</li>
+                                <li>웹 브라우저의 히스토리 기능</li>
+                                <li>운영체제의 메모리 관리</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 스택 -->
+                <section id="stack" class="mb-12">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">스택 (Stack)</h2>
+                    <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">정의</h3>
+                            <p>스택은 LIFO(Last In, First Out) 원칙에 따라 데이터를 저장하는 선형 자료구조입니다. 마지막에 추가된 요소가 가장 먼저 제거됩니다.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">시각화</h3>
+                            <div class="flex justify-center my-4">
+                                <div id="stack-visual" class="flex flex-col-reverse">
+                                    <div class="stack-item">A</div>
+                                    <div class="stack-item">B</div>
+                                    <div class="stack-item">C</div>
+                                    <div class="stack-item">D</div>
+                                    <div class="stack-item">E</div>
+                                </div>
+                            </div>
+                            <p class="text-center text-sm text-gray-600 dark:text-gray-400">마지막에 추가된 E가 가장 먼저 제거됩니다</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">주요 연산 및 시간 복잡도</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>Push</strong>: O(1) - 스택의 맨 위에 요소 추가</li>
+                                <li><strong>Pop</strong>: O(1) - 스택의 맨 위 요소 제거 및 반환</li>
+                                <li><strong>Peek/Top</strong>: O(1) - 스택의 맨 위 요소 조회</li>
+                                <li><strong>isEmpty</strong>: O(1) - 스택이 비어있는지 확인</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">장점과 단점</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-medium text-green-600 dark:text-green-400 mb-2">장점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>구현이 간단함</li>
+                                        <li>모든 연산이 일정한 시간 복잡도(O(1))</li>
+                                        <li>메모리 할당과 해제가 단순</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-red-600 dark:text-red-400 mb-2">단점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>중간 요소에 접근 불가</li>
+                                        <li>최대 크기 제한 가능성(구현에 따라)</li>
+                                        <li>특정 요소 검색에 비효율적</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">구현 예시</h3>
+                            <pre><code class="language-java">import java.util.EmptyStackException;
+
+public class Stack<T> {
+    private Object[] items;
+    private int size;
+    private static final int DEFAULT_CAPACITY = 10;
+    
+    public Stack() {
+        items = new Object[DEFAULT_CAPACITY];
+        size = 0;
+    }
+    
+    // 요소 추가
+    public void push(T element) {
+        ensureCapacity();
+        items[size++] = element;
+    }
+    
+    // 요소 제거 및 반환
+    @SuppressWarnings("unchecked")
+    public T pop() {
+        if (isEmpty()) {
+            throw new EmptyStackException();
+        }
+        
+        T item = (T) items[--size];
+        items[size] = null; // 참조 제거하여 GC 돕기
+        return item;
+    }
+    
+    // 맨 위 요소 조회
+    @SuppressWarnings("unchecked")
+    public T peek() {
+        if (isEmpty()) {
+            throw new EmptyStackException();
+        }
+        
+        return (T) items[size - 1];
+    }
+    
+    // 비어있는지 확인
+    public boolean isEmpty() {
+        return size == 0;
+    }
+    
+    // 스택 크기 확인
+    public int size() {
+        return size;
+    }
+    
+    // 스택 초기화
+    public void clear() {
+        // 객체 참조 제거
+        for (int i = 0; i < size; i++) {
+            items[i] = null;
+        }
+        size = 0;
+    }
+    
+    // 필요시 배열 크기 조정
+    private void ensureCapacity() {
+        if (size == items.length) {
+            Object[] newItems = new Object[items.length * 2];
+            System.arraycopy(items, 0, newItems, 0, size);
+            items = newItems;
+        }
+    }
+    
+    // 문자열 표현
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        
+        for (int i = 0; i < size; i++) {
+            sb.append(items[i]);
+            if (i < size - 1) {
+                sb.append(", ");
+            }
+        }
+        
+        sb.append("]");
+        return sb.toString();
+    }
+    
+    // 사용 예제
+    public static void main(String[] args) {
+        Stack<Integer> stack = new Stack<>();
+        
+        stack.push(10);
+        stack.push(20);
+        stack.push(30);
+        
+        System.out.println("스택: " + stack);
+        System.out.println("맨 위 요소: " + stack.peek());
+        System.out.println("요소 꺼내기: " + stack.pop());
+        System.out.println("요소 꺼낸 후 스택: " + stack);
+        System.out.println("스택 크기: " + stack.size());
+        
+        stack.clear();
+        System.out.println("초기화 후 스택이 비었는지: " + stack.isEmpty());
+    }
+}</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">실제 사용 사례</h3>
+                            <ul class="list-disc list-inside">
+                                <li>함수 호출(콜 스택)</li>
+                                <li>브라우저의 방문 기록(뒤로 가기)</li>
+                                <li>괄호 검사, 수식 계산 및 변환(중위→후위)</li>
+                                <li>실행 취소(Undo) 기능</li>
+                                <li>깊이 우선 탐색(DFS) 알고리즘</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 큐 -->
+                <section id="queue" class="mb-12">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">큐 (Queue)</h2>
+                    <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">정의</h3>
+                            <p>큐는 FIFO(First In, First Out) 원칙에 따라 데이터를 저장하는 선형 자료구조입니다. 가장 먼저 추가된 요소가 가장 먼저 제거됩니다.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">시각화</h3>
+                            <div class="flex justify-center my-4">
+                                <div id="queue-visual" class="queue-container">
+                                    <div class="queue-item">A</div>
+                                    <div class="queue-item">B</div>
+                                    <div class="queue-item">C</div>
+                                    <div class="queue-item">D</div>
+                                    <div class="queue-item">E</div>
+                                </div>
+                            </div>
+                            <div class="flex justify-center space-x-20 text-sm text-gray-600 dark:text-gray-400">
+                                <div>Dequeue ←</div>
+                                <div>→ Enqueue</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">주요 연산 및 시간 복잡도</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>Enqueue</strong>: O(1) - 큐의 뒤에 요소 추가</li>
+                                <li><strong>Dequeue</strong>: O(1) - 큐의 앞에서 요소 제거 및 반환</li>
+                                <li><strong>Front</strong>: O(1) - 큐의 맨 앞 요소 조회</li>
+                                <li><strong>isEmpty</strong>: O(1) - 큐가 비어있는지 확인</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">큐의 종류</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>일반 큐(Queue)</strong>: 기본적인 FIFO 구조</li>
+                                <li><strong>원형 큐(Circular Queue)</strong>: 마지막 위치가 처음 위치와 연결된 큐</li>
+                                <li><strong>우선순위 큐(Priority Queue)</strong>: 요소의 우선순위에 따라 처리하는 큐</li>
+                                <li><strong>덱(Deque, Double-ended Queue)</strong>: 양쪽 끝에서 삽입과 삭제가 가능한 큐</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">장점과 단점</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-medium text-green-600 dark:text-green-400 mb-2">장점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>간단한 데이터 관리</li>
+                                        <li>고정된 크기로 구현 가능</li>
+                                        <li>순서대로 처리해야 하는 작업에 적합</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-red-600 dark:text-red-400 mb-2">단점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>중간 요소에 접근 불가</li>
+                                        <li>크기가 고정되면 오버플로우 발생 가능</li>
+                                        <li>배열로 구현 시 Dequeue 연산이 비효율적</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">구현 예시</h3>
+                            <pre><code class="language-java">import java.util.NoSuchElementException;
+
+public class Queue<T> {
+    private Object[] elements;
+    private int front;  // 첫 번째 요소의 인덱스
+    private int rear;   // 마지막 요소 다음 인덱스
+    private int size;   // 현재 큐의 크기
+    private static final int DEFAULT_CAPACITY = 10;
+
+    public Queue() {
+        elements = new Object[DEFAULT_CAPACITY];
+        front = 0;
+        rear = 0;
+        size = 0;
+    }
+
+    // 요소 추가
+    public void enqueue(T item) {
+        ensureCapacity();
+        elements[rear] = item;
+        rear = (rear + 1) % elements.length;
+        size++;
+    }
+
+    // 요소 제거 및 반환
+    @SuppressWarnings("unchecked")
+    public T dequeue() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("Queue is empty");
+        }
+        
+        T item = (T) elements[front];
+        elements[front] = null;  // 참조 제거
+        front = (front + 1) % elements.length;
+        size--;
+        return item;
+    }
+
+    // 맨 앞 요소 조회
+    @SuppressWarnings("unchecked")
+    public T peek() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("Queue is empty");
+        }
+        return (T) elements[front];
+    }
+
+    // 비어있는지 확인
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    // 큐 크기 확인
+    public int size() {
+        return size;
+    }
+
+    // 큐 초기화
+    public void clear() {
+        for (int i = 0; i < elements.length; i++) {
+            elements[i] = null;
+        }
+        front = 0;
+        rear = 0;
+        size = 0;
+    }
+
+    // 배열 크기 조정 (필요시)
+    private void ensureCapacity() {
+        if (size == elements.length) {
+            Object[] newElements = new Object[elements.length * 2];
+            
+            // front가 rear보다 작거나 같은 경우 (연속된 배열)
+            if (front <= rear) {
+                System.arraycopy(elements, front, newElements, 0, size);
+            } 
+            // front가 rear보다 큰 경우 (배열이 순환된 경우)
+            else {
+                System.arraycopy(elements, front, newElements, 0, elements.length - front);
+                System.arraycopy(elements, 0, newElements, elements.length - front, rear);
+            }
+            
+            elements = newElements;
+            front = 0;
+            rear = size;
+        }
+    }
+    
+    @Override
+    public String toString() {
+        if (isEmpty()) {
+            return "[]";
+        }
+        
+        StringBuilder sb = new StringBuilder("[");
+        
+        int current = front;
+        for (int i = 0; i < size; i++) {
+            sb.append(elements[current]);
+            if (i < size - 1) {
+                sb.append(", ");
+            }
+            current = (current + 1) % elements.length;
+        }
+        
+        sb.append("]");
+        return sb.toString();
+    }
+    
+    // 사용 예시
+    public static void main(String[] args) {
+        Queue<String> queue = new Queue<>();
+        
+        queue.enqueue("A");
+        queue.enqueue("B");
+        queue.enqueue("C");
+        queue.enqueue("D");
+        
+        System.out.println("큐: " + queue);
+        System.out.println("첫 번째 요소: " + queue.peek());
+        System.out.println("dequeue: " + queue.dequeue());
+        System.out.println("dequeue 후 큐: " + queue);
+        System.out.println("큐 크기: " + queue.size());
+        
+        queue.clear();
+        System.out.println("초기화 후 큐가 비었는지: " + queue.isEmpty());
+    }
+}</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">실제 사용 사례</h3>
+                            <ul class="list-disc list-inside">
+                                <li>작업 스케줄링 (프린터 대기열, 프로세스 관리)</li>
+                                <li>너비 우선 탐색(BFS) 알고리즘</li>
+                                <li>캐시 구현</li>
+                                <li>데이터 버퍼링 및 스트리밍</li>
+                                <li>이벤트 처리 (JavaScript의 이벤트 루프)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 트리 -->
+                <section id="tree" class="mb-12">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">트리 (Tree)</h2>
+                    <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">정의</h3>
+                            <p>트리는 계층적 관계를 나타내는 비선형 자료구조로, 노드(node)와 간선(edge)으로 구성됩니다. 각 노드는 0개 이상의 자식 노드를 가질 수 있으며, 사이클이 없습니다.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">시각화</h3>
+                            <div class="flex justify-center my-4">
+                                <div id="tree-visual" class="tree-node">
+                                    <div class="tree-node-item">A</div>
+                                    <div class="tree-children">
+                                        <div class="tree-branch"></div>
+                                        <div class="tree-node">
+                                            <div class="tree-node-item">B</div>
+                                            <div class="tree-children">
+                                                <div class="tree-branch"></div>
+                                                <div class="tree-node">
+                                                    <div class="tree-node-item">D</div>
+                                                </div>
+                                                <div class="tree-node">
+                                                    <div class="tree-node-item">E</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tree-node">
+                                            <div class="tree-node-item">C</div>
+                                            <div class="tree-children">
+                                                <div class="tree-branch"></div>
+                                                <div class="tree-node">
+                                                    <div class="tree-node-item">F</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">트리 용어</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>루트(Root)</strong>: 트리의 최상위 노드</li>
+                                <li><strong>부모 노드(Parent Node)</strong>: 자식 노드와 직접 연결된 상위 노드</li>
+                                <li><strong>자식 노드(Child Node)</strong>: 부모 노드와 직접 연결된 하위 노드</li>
+                                <li><strong>리프 노드(Leaf Node)</strong>: 자식 노드가 없는 노드</li>
+                                <li><strong>형제 노드(Sibling Node)</strong>: 같은 부모를 가진 노드</li>
+                                <li><strong>깊이(Depth)</strong>: 루트부터 특정 노드까지의 경로 길이</li>
+                                <li><strong>높이(Height)</strong>: 리프 노드부터 특정 노드까지의 가장 긴 경로 길이</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">트리의 종류</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>이진 트리(Binary Tree)</strong>: 각 노드가 최대 2개의 자식을 가짐</li>
+                                <li><strong>이진 검색 트리(Binary Search Tree)</strong>: 왼쪽 자식 < 부모 < 오른쪽 자식</li>
+                                <li><strong>균형 트리(Balanced Tree)</strong>: 왼쪽과 오른쪽 서브트리의 높이 차이가 제한됨</li>
+                                <li><strong>B-트리(B-Tree)</strong>: 디스크나 외부 메모리에 적합한 트리</li>
+                                <li><strong>힙(Heap)</strong>: 부모가 자식보다 크거나(최대 힙) 작은(최소 힙) 완전 이진 트리</li>
+                                <li><strong>트라이(Trie)</strong>: 문자열 검색을 위한 특수 트리</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">트리 순회 방법</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>전위 순회(Preorder)</strong>: 노드 → 왼쪽 서브트리 → 오른쪽 서브트리</li>
+                                <li><strong>중위 순회(Inorder)</strong>: 왼쪽 서브트리 → 노드 → 오른쪽 서브트리</li>
+                                <li><strong>후위 순회(Postorder)</strong>: 왼쪽 서브트리 → 오른쪽 서브트리 → 노드</li>
+                                <li><strong>레벨 순회(Level Order)</strong>: 같은 레벨의 노드부터 순차적으로 방문</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">구현 예시 (이진 트리)</h3>
+                            <pre><code class="language-javascript">class TreeNode {
+    constructor(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+class BinaryTree {
+    constructor() {
+        this.root = null;
+    }
+    
+    // 전위 순회
+    preOrder(node = this.root, result = []) {
+        if (node) {
+            // 현재 노드 방문
+            result.push(node.value);
+            // 왼쪽 서브트리 순회
+            this.preOrder(node.left, result);
+            // 오른쪽 서브트리 순회
+            this.preOrder(node.right, result);
+        }
+        return result;
+    }
+    
+    // 중위 순회
+    inOrder(node = this.root, result = []) {
+        if (node) {
+            // 왼쪽 서브트리 순회
+            this.inOrder(node.left, result);
+            // 현재 노드 방문
+            result.push(node.value);
+            // 오른쪽 서브트리 순회
+            this.inOrder(node.right, result);
+        }
+        return result;
+    }
+    
+    // 후위 순회
+    postOrder(node = this.root, result = []) {
+        if (node) {
+            // 왼쪽 서브트리 순회
+            this.postOrder(node.left, result);
+            // 오른쪽 서브트리 순회
+            this.postOrder(node.right, result);
+            // 현재 노드 방문
+            result.push(node.value);
+        }
+        return result;
+    }
+    
+    // 레벨 순회 (BFS)
+    levelOrder() {
+        if (!this.root) return [];
+        
+        const result = [];
+        const queue = [this.root];
+        
+        while (queue.length > 0) {
+            const node = queue.shift();
+            result.push(node.value);
+            
+            if (node.left) queue.push(node.left);
+            if (node.right) queue.push(node.right);
+        }
+        
+        return result;
+    }
+}</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">실제 사용 사례</h3>
+                            <ul class="list-disc list-inside">
+                                <li>파일 시스템 구조</li>
+                                <li>계층적 데이터 표현 (조직도, 가계도)</li>
+                                <li>데이터베이스 인덱싱</li>
+                                <li>구문 분석 트리 (컴파일러)</li>
+                                <li>의사 결정 트리</li>
+                                <li>게임의 미니맥스 알고리즘</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 이진 검색 트리 -->
+                <section id="bst" class="mb-12">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">이진 검색 트리 (Binary Search Tree)</h2>
+                    <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">정의</h3>
+                            <p>이진 검색 트리(BST)는 각 노드가 최대 두 개의 자식을 가지며, 다음 속성을 만족하는 이진 트리입니다: 왼쪽 서브트리의 모든 노드는 부모 노드보다 작고, 오른쪽 서브트리의 모든 노드는 부모 노드보다 큽니다.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">시각화</h3>
+                            <div class="flex justify-center my-4">
+                                <canvas id="bst-canvas" width="300" height="200"></canvas>
+                            </div>
+                            <script>
+                                // 이진 검색 트리 시각화
+                                const canvas = document.getElementById('bst-canvas');
+                                const ctx = canvas.getContext('2d');
+                                const isDarkMode = document.documentElement.classList.contains('dark');
+                                
+                                // 텍스트 색상 설정
+                                ctx.fillStyle = isDarkMode ? '#FFFFFF' : '#000000';
+                                
+                                // 트리 그리기
+                                ctx.font = '14px Arial';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                
+                                // 노드 그리기
+                                function drawNode(x, y, value) {
+                                    ctx.beginPath();
+                                    ctx.arc(x, y, 20, 0, Math.PI * 2);
+                                    ctx.strokeStyle = '#5D5CDE';
+                                    ctx.stroke();
+                                    ctx.fillStyle = isDarkMode ? '#FFFFFF' : '#000000';
+                                    ctx.fillText(value, x, y);
+                                }
+                                
+                                // 선 그리기
+                                function drawLine(x1, y1, x2, y2) {
+                                    ctx.beginPath();
+                                    ctx.moveTo(x1, y1);
+                                    ctx.lineTo(x2, y2);
+                                    ctx.strokeStyle = '#5D5CDE';
+                                    ctx.stroke();
+                                }
+                                
+                                // BST 시각화
+                                const centerX = 150;
+                                const topY = 30;
+                                
+                                // 루트 노드 (8)
+                                drawNode(centerX, topY, 8);
+                                
+                                // 왼쪽 서브트리
+                                drawLine(centerX - 15, topY + 15, centerX - 60, topY + 45);
+                                drawNode(centerX - 70, topY + 60, 3);
+                                
+                                drawLine(centerX - 85, topY + 75, centerX - 100, topY + 105);
+                                drawNode(centerX - 110, topY + 120, 1);
+                                
+                                drawLine(centerX - 55, topY + 75, centerX - 40, topY + 105);
+                                drawNode(centerX - 30, topY + 120, 6);
+                                
+                                // 오른쪽 서브트리
+                                drawLine(centerX + 15, topY + 15, centerX + 60, topY + 45);
+                                drawNode(centerX + 70, topY + 60, 10);
+                                
+                                drawLine(centerX + 55, topY + 75, centerX + 40, topY + 105);
+                                drawNode(centerX + 30, topY + 120, 9);
+                                
+                                drawLine(centerX + 85, topY + 75, centerX + 100, topY + 105);
+                                drawNode(centerX + 110, topY + 120, 14);
+                            </script>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">주요 연산 및 시간 복잡도</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>검색(Search)</strong>: O(log n) - 균형 잡힌 트리의 경우, O(n) - 최악의 경우</li>
+                                <li><strong>삽입(Insert)</strong>: O(log n) - 균형 잡힌 트리의 경우, O(n) - 최악의 경우</li>
+                                <li><strong>삭제(Delete)</strong>: O(log n) - 균형 잡힌 트리의 경우, O(n) - 최악의 경우</li>
+                                <li><strong>순회(Traversal)</strong>: O(n) - 모든 노드를 방문</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">장점과 단점</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-medium text-green-600 dark:text-green-400 mb-2">장점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>빠른 검색, 삽입, 삭제 (균형 잡힌 경우)</li>
+                                        <li>정렬된 데이터 유지</li>
+                                        <li>범위 검색 효율적</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-red-600 dark:text-red-400 mb-2">단점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>비균형 상태에서 성능 저하 (한쪽으로 치우친 트리)</li>
+                                        <li>추가 메모리 사용</li>
+                                        <li>삭제 연산이 복잡할 수 있음</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">균형 이진 검색 트리</h3>
+                            <p>비균형 BST의 단점을 보완하기 위해 균형을 유지하는 다양한 트리 구조가 있습니다:</p>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>AVL 트리</strong>: 모든 노드의 왼쪽과 오른쪽 서브트리 높이 차이가 1 이하</li>
+                                <li><strong>레드-블랙 트리</strong>: 각 노드에 색상 정보를 추가하여 균형 유지</li>
+                                <li><strong>스플레이 트리</strong>: 자주 접근하는 노드를 루트로 이동시켜 효율성 향상</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">구현 예시</h3>
+                            <pre><code class="language-java">class TreeNode {
+    int value;
+    TreeNode left;
+    TreeNode right;
+    
+    public TreeNode(int value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+public class BinarySearchTree {
+    private TreeNode root;
+    
+    public BinarySearchTree() {
+        this.root = null;
+    }
+    
+    // 값 삽입
+    public void insert(int value) {
+        TreeNode newNode = new TreeNode(value);
+        
+        if (root == null) {
+            root = newNode;
+            return;
+        }
+        
+        insertNode(root, newNode);
+    }
+    
+    private void insertNode(TreeNode node, TreeNode newNode) {
+        // 왼쪽 서브트리에 삽입
+        if (newNode.value < node.value) {
+            if (node.left == null) {
+                node.left = newNode;
+            } else {
+                insertNode(node.left, newNode);
+            }
+        }
+        // 오른쪽 서브트리에 삽입
+        else {
+            if (node.right == null) {
+                node.right = newNode;
+            } else {
+                insertNode(node.right, newNode);
+            }
+        }
+    }
+    
+    // 값 검색
+    public boolean search(int value) {
+        return searchNode(root, value);
+    }
+    
+    private boolean searchNode(TreeNode node, int value) {
+        if (node == null) {
+            return false;
+        }
+        
+        if (value == node.value) {
+            return true;
+        }
+        
+        if (value < node.value) {
+            return searchNode(node.left, value);
+        } else {
+            return searchNode(node.right, value);
+        }
+    }
+    
+    // 중위 순회 (오름차순으로 값을 얻음)
+    public List<Integer> inOrderTraversal() {
+        List<Integer> result = new ArrayList<>();
+        inOrderTraversal(root, result);
+        return result;
+    }
+    
+    private void inOrderTraversal(TreeNode node, List<Integer> result) {
+        if (node != null) {
+            inOrderTraversal(node.left, result);
+            result.add(node.value);
+            inOrderTraversal(node.right, result);
+        }
+    }
+    
+    // 전위 순회
+    public List<Integer> preOrderTraversal() {
+        List<Integer> result = new ArrayList<>();
+        preOrderTraversal(root, result);
+        return result;
+    }
+    
+    private void preOrderTraversal(TreeNode node, List<Integer> result) {
+        if (node != null) {
+            result.add(node.value);
+            preOrderTraversal(node.left, result);
+            preOrderTraversal(node.right, result);
+        }
+    }
+    
+    // 후위 순회
+    public List<Integer> postOrderTraversal() {
+        List<Integer> result = new ArrayList<>();
+        postOrderTraversal(root, result);
+        return result;
+    }
+    
+    private void postOrderTraversal(TreeNode node, List<Integer> result) {
+        if (node != null) {
+            postOrderTraversal(node.left, result);
+            postOrderTraversal(node.right, result);
+            result.add(node.value);
+        }
+    }
+    
+    // 사용 예시
+    public static void main(String[] args) {
+        BinarySearchTree bst = new BinarySearchTree();
+        
+        // 값 삽입
+        bst.insert(8);
+        bst.insert(3);
+        bst.insert(10);
+        bst.insert(1);
+        bst.insert(6);
+        bst.insert(14);
+        bst.insert(4);
+        bst.insert(7);
+        bst.insert(13);
+        
+        // 검색
+        System.out.println("값 6 검색: " + bst.search(6)); // true
+        System.out.println("값 12 검색: " + bst.search(12)); // false
+        
+        // 중위 순회 (오름차순 정렬)
+        System.out.println("중위 순회: " + bst.inOrderTraversal()); // [1, 3, 4, 6, 7, 8, 10, 13, 14]
+        
+        // 전위 순회
+        System.out.println("전위 순회: " + bst.preOrderTraversal()); // [8, 3, 1, 6, 4, 7, 10, 14, 13]
+        
+        // 후위 순회
+        System.out.println("후위 순회: " + bst.postOrderTraversal()); // [1, 4, 7, 6, 3, 13, 14, 10, 8]
+    }
+}</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">실제 사용 사례</h3>
+                            <ul class="list-disc list-inside">
+                                <li>데이터베이스 인덱싱</li>
+                                <li>우선순위 큐 구현</li>
+                                <li>사전 구현 (키-값 저장)</li>
+                                <li>파일 시스템 인덱싱</li>
+                                <li>구간 검색</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 그래프 -->
+                <section id="graph" class="mb-12">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">그래프 (Graph)</h2>
+                    <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">정의</h3>
+                            <p>그래프는 노드(정점, vertex)와 간선(edge)으로 구성된 비선형 자료구조로, 객체 간의 관계를 나타냅니다. 각 간선은 두 노드를 연결하며, 방향성이 있거나 없을 수 있습니다.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">시각화</h3>
+                            <div class="flex justify-center my-4">
+                                <canvas id="graph-canvas" width="300" height="250"></canvas>
+                            </div>
+                            <script>
+                                // 그래프 시각화
+                                const graphCanvas = document.getElementById('graph-canvas');
+                                const graphCtx = graphCanvas.getContext('2d');
+                                const isGraphDarkMode = document.documentElement.classList.contains('dark');
+                                
+                                // 텍스트 색상 설정
+                                graphCtx.fillStyle = isGraphDarkMode ? '#FFFFFF' : '#000000';
+                                
+                                // 노드 위치 정의
+                                const nodes = [
+                                    { id: 'A', x: 150, y: 50 },
+                                    { id: 'B', x: 50, y: 150 },
+                                    { id: 'C', x: 150, y: 200 },
+                                    { id: 'D', x: 250, y: 150 },
+                                    { id: 'E', x: 180, y: 120 }
+                                ];
+                                
+                                // 간선 정의
+                                const edges = [
+                                    { from: 'A', to: 'B' },
+                                    { from: 'A', to: 'D' },
+                                    { from: 'A', to: 'E' },
+                                    { from: 'B', to: 'C' },
+                                    { from: 'C', to: 'D' },
+                                    { from: 'D', to: 'E' }
+                                ];
+                                
+                                // 간선 그리기
+                                for (const edge of edges) {
+                                    const fromNode = nodes.find(n => n.id === edge.from);
+                                    const toNode = nodes.find(n => n.id === edge.to);
+                                    
+                                    graphCtx.beginPath();
+                                    graphCtx.moveTo(fromNode.x, fromNode.y);
+                                    graphCtx.lineTo(toNode.x, toNode.y);
+                                    graphCtx.strokeStyle = '#5D5CDE';
+                                    graphCtx.stroke();
+                                }
+                                
+                                // 노드 그리기
+                                for (const node of nodes) {
+                                    graphCtx.beginPath();
+                                    graphCtx.arc(node.x, node.y, 20, 0, Math.PI * 2);
+                                    graphCtx.fillStyle = isGraphDarkMode ? '#333333' : '#FFFFFF';
+                                    graphCtx.fill();
+                                    graphCtx.strokeStyle = '#5D5CDE';
+                                    graphCtx.stroke();
+                                    
+                                    graphCtx.fillStyle = isGraphDarkMode ? '#FFFFFF' : '#000000';
+                                    graphCtx.font = '14px Arial';
+                                    graphCtx.textAlign = 'center';
+                                    graphCtx.textBaseline = 'middle';
+                                    graphCtx.fillText(node.id, node.x, node.y);
+                                }
+                            </script>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">그래프 용어</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>정점(Vertex/Node)</strong>: 그래프의 기본 요소</li>
+                                <li><strong>간선(Edge)</strong>: 두 정점을 연결하는 선</li>
+                                <li><strong>인접(Adjacent)</strong>: 두 정점이 간선으로 직접 연결된 상태</li>
+                                <li><strong>경로(Path)</strong>: 한 정점에서 다른 정점으로 가는 간선들의 시퀀스</li>
+                                <li><strong>사이클(Cycle)</strong>: 시작 정점과 끝 정점이 같은 경로</li>
+                                <li><strong>차수(Degree)</strong>: 한 정점에 연결된 간선의 수</li>
+                                <li><strong>가중치(Weight)</strong>: 간선에 할당된 값</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">그래프의 종류</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>방향 그래프(Directed Graph)</strong>: 간선이 방향을 가짐</li>
+                                <li><strong>무방향 그래프(Undirected Graph)</strong>: 간선에 방향이 없음</li>
+                                <li><strong>가중치 그래프(Weighted Graph)</strong>: 간선에 가중치가 있음</li>
+                                <li><strong>완전 그래프(Complete Graph)</strong>: 모든 정점 쌍 사이에 간선이 있음</li>
+                                <li><strong>연결 그래프(Connected Graph)</strong>: 모든 정점 쌍 사이에 경로가 있음</li>
+                                <li><strong>비연결 그래프(Disconnected Graph)</strong>: 연결되지 않은 정점이 있음</li>
+                                <li><strong>순환 그래프(Cyclic Graph)</strong>: 하나 이상의 사이클이 있음</li>
+                                <li><strong>비순환 그래프(Acyclic Graph)</strong>: 사이클이 없음</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">그래프 표현 방법</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-medium mb-2">인접 행렬(Adjacency Matrix)</h4>
+                                    <p>2차원 배열을 사용하여 노드 간 연결 관계를 표현합니다. matrix[i][j]는 노드 i에서 노드 j로의 간선 존재 여부를 나타냅니다.</p>
+                                    <p class="mt-2"><strong>장점</strong>: 간선 확인이 O(1), 구현이 간단</p>
+                                    <p><strong>단점</strong>: 메모리 사용량이 O(V²), V는 정점의 수</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-2">인접 리스트(Adjacency List)</h4>
+                                    <p>각 노드마다 인접한 노드의 리스트를 유지합니다. 각 노드에 연결된 노드들을 리스트로 표현합니다.</p>
+                                    <p class="mt-2"><strong>장점</strong>: 메모리 효율적 O(V+E), 특히 희소 그래프에서</p>
+                                    <p><strong>단점</strong>: 간선 확인이 O(V), 구현이 복잡할 수 있음</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">그래프 탐색 알고리즘</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>깊이 우선 탐색(DFS, Depth-First Search)</strong>: 가능한 깊이 먼저 탐색, 스택 사용</li>
+                                <li><strong>너비 우선 탐색(BFS, Breadth-First Search)</strong>: 같은 레벨 먼저 탐색, 큐 사용</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">구현 예시 (인접 리스트)</h3>
+                            <pre><code class="language-java">import java.util.*;
+
+public class Graph<T> {
+    // 인접 리스트로 그래프 표현
+    private Map<T, List<T>> adjacencyList;
+    
+    public Graph() {
+        adjacencyList = new HashMap<>();
+    }
+    
+    // 정점 추가
+    public void addVertex(T vertex) {
+        if (!adjacencyList.containsKey(vertex)) {
+            adjacencyList.put(vertex, new ArrayList<>());
+        }
+    }
+    
+    // 간선 추가 (무방향 그래프)
+    public void addEdge(T vertex1, T vertex2) {
+        // 정점이 존재하지 않으면 먼저 추가
+        if (!adjacencyList.containsKey(vertex1)) {
+            addVertex(vertex1);
+        }
+        if (!adjacencyList.containsKey(vertex2)) {
+            addVertex(vertex2);
+        }
+        
+        // 양방향 간선 추가
+        adjacencyList.get(vertex1).add(vertex2);
+        adjacencyList.get(vertex2).add(vertex1);
+    }
+    
+    // 간선 제거
+    public void removeEdge(T vertex1, T vertex2) {
+        if (adjacencyList.containsKey(vertex1) && adjacencyList.containsKey(vertex2)) {
+            adjacencyList.get(vertex1).remove(vertex2);
+            adjacencyList.get(vertex2).remove(vertex1);
+        }
+    }
+    
+    // 정점 제거
+    public void removeVertex(T vertex) {
+        if (!adjacencyList.containsKey(vertex)) {
+            return;
+        }
+        
+        // 해당 정점과 연결된 모든 간선 제거
+        for (T adjacent : new ArrayList<>(adjacencyList.get(vertex))) {
+            removeEdge(vertex, adjacent);
+        }
+        
+        // 정점 제거
+        adjacencyList.remove(vertex);
+    }
+    
+    // 깊이 우선 탐색 (DFS) - 재귀 방식
+    public List<T> dfsRecursive(T start) {
+        List<T> result = new ArrayList<>();
+        Set<T> visited = new HashSet<>();
+        
+        dfsRecursiveHelper(start, visited, result);
+        
+        return result;
+    }
+    
+    private void dfsRecursiveHelper(T vertex, Set<T> visited, List<T> result) {
+        // 정점이 존재하지 않으면 종료
+        if (!adjacencyList.containsKey(vertex)) {
+            return;
+        }
+        
+        // 방문 표시 및 결과에 추가
+        visited.add(vertex);
+        result.add(vertex);
+        
+        // 인접 정점들에 대해 재귀적으로 DFS 수행
+        for (T neighbor : adjacencyList.get(vertex)) {
+            if (!visited.contains(neighbor)) {
+                dfsRecursiveHelper(neighbor, visited, result);
+            }
+        }
+    }
+    
+    // 깊이 우선 탐색 (DFS) - 반복 방식
+    public List<T> dfsIterative(T start) {
+        if (!adjacencyList.containsKey(start)) {
+            return new ArrayList<>();
+        }
+        
+        List<T> result = new ArrayList<>();
+        Set<T> visited = new HashSet<>();
+        Stack<T> stack = new Stack<>();
+        
+        // 시작 정점을 스택에 넣고 방문 표시
+        stack.push(start);
+        visited.add(start);
+        
+        while (!stack.isEmpty()) {
+            T currentVertex = stack.pop();
+            result.add(currentVertex);
+            
+            // 인접 정점들을 스택에 추가 (역순으로 추가하여 원래 순서대로 방문)
+            List<T> neighbors = new ArrayList<>(adjacencyList.get(currentVertex));
+            Collections.reverse(neighbors);
+            
+            for (T neighbor : neighbors) {
+                if (!visited.contains(neighbor)) {
+                    stack.push(neighbor);
+                    visited.add(neighbor);
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    // 너비 우선 탐색 (BFS)
+    public List<T> bfs(T start) {
+        if (!adjacencyList.containsKey(start)) {
+            return new ArrayList<>();
+        }
+        
+        List<T> result = new ArrayList<>();
+        Set<T> visited = new HashSet<>();
+        Queue<T> queue = new LinkedList<>();
+        
+        // 시작 정점을 큐에 넣고 방문 표시
+        queue.add(start);
+        visited.add(start);
+        
+        while (!queue.isEmpty()) {
+            T currentVertex = queue.poll();
+            result.add(currentVertex);
+            
+            // 인접 정점들을 큐에 추가
+            for (T neighbor : adjacencyList.get(currentVertex)) {
+                if (!visited.contains(neighbor)) {
+                    queue.add(neighbor);
+                    visited.add(neighbor);
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    // 그래프 출력
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<T, List<T>> entry : adjacencyList.entrySet()) {
+            sb.append(entry.getKey()).append(" -> ");
+            sb.append(entry.getValue().toString()).append("\n");
+        }
+        return sb.toString();
+    }
+    
+    // 사용 예시
+    public static void main(String[] args) {
+        // 문자열 정점을 가진 그래프 생성
+        Graph<String> graph = new Graph<>();
+        
+        // 정점 추가
+        graph.addVertex("A");
+        graph.addVertex("B");
+        graph.addVertex("C");
+        graph.addVertex("D");
+        graph.addVertex("E");
+        graph.addVertex("F");
+        
+        // 간선 추가
+        graph.addEdge("A", "B");
+        graph.addEdge("A", "C");
+        graph.addEdge("B", "D");
+        graph.addEdge("C", "E");
+        graph.addEdge("D", "E");
+        graph.addEdge("D", "F");
+        graph.addEdge("E", "F");
+        
+        // 그래프 출력
+        System.out.println("그래프 구조:");
+        System.out.println(graph);
+        
+        // DFS 재귀 방식
+        System.out.println("DFS 재귀 (A 시작): " + graph.dfsRecursive("A"));
+        
+        // DFS 반복 방식
+        System.out.println("DFS 반복 (A 시작): " + graph.dfsIterative("A"));
+        
+        // BFS
+        System.out.println("BFS (A 시작): " + graph.bfs("A"));
+        
+        // 간선 제거
+        graph.removeEdge("A", "B");
+        System.out.println("\n간선 A-B 제거 후:");
+        System.out.println(graph);
+        
+        // 정점 제거
+        graph.removeVertex("F");
+        System.out.println("정점 F 제거 후:");
+        System.out.println(graph);
+    }
+}</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">실제 사용 사례</h3>
+                            <ul class="list-disc list-inside">
+                                <li>소셜 네트워크 (친구 관계)</li>
+                                <li>지도 및 내비게이션 시스템</li>
+                                <li>웹 페이지 링크 구조</li>
+                                <li>네트워크 라우팅</li>
+                                <li>추천 시스템</li>
+                                <li>컴퓨터 네트워크 토폴로지</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 해시 테이블 -->
+                <section id="hashtable" class="mb-12">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">해시 테이블 (Hash Table)</h2>
+                    <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">정의</h3>
+                            <p>해시 테이블은 키-값 쌍을 저장하는 자료구조로, 해시 함수를 사용하여 키를 배열의 인덱스로 변환합니다. 이를 통해 평균적으로 O(1) 시간 복잡도로 데이터에 접근할 수 있습니다.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">시각화</h3>
+                            <div class="flex justify-center my-4">
+                                <canvas id="hash-canvas" width="300" height="250"></canvas>
+                            </div>
+                            <script>
+                                // 해시 테이블 시각화
+                                const hashCanvas = document.getElementById('hash-canvas');
+                                const hashCtx = hashCanvas.getContext('2d');
+                                const isHashDarkMode = document.documentElement.classList.contains('dark');
+                                
+                                // 텍스트 색상 설정
+                                hashCtx.fillStyle = isHashDarkMode ? '#FFFFFF' : '#000000';
+                                
+                                // 해시 테이블 배열 그리기
+                                const tableWidth = 200;
+                                const tableHeight = 200;
+                                const bucketHeight = 30;
+                                const bucketCount = 6;
+                                const tableX = 50;
+                                const tableY = 20;
+                                
+                                // 테이블 테두리
+                                hashCtx.beginPath();
+                                hashCtx.rect(tableX, tableY, tableWidth, tableHeight);
+                                hashCtx.strokeStyle = '#5D5CDE';
+                                hashCtx.stroke();
+                                
+                                // 버킷 선 그리기
+                                for (let i = 1; i < bucketCount; i++) {
+                                    const y = tableY + i * (tableHeight / bucketCount);
+                                    hashCtx.beginPath();
+                                    hashCtx.moveTo(tableX, y);
+                                    hashCtx.lineTo(tableX + tableWidth, y);
+                                    hashCtx.strokeStyle = '#5D5CDE';
+                                    hashCtx.stroke();
+                                }
+                                
+                                // 인덱스 레이블 추가
+                                hashCtx.font = '12px Arial';
+                                hashCtx.textAlign = 'right';
+                                hashCtx.textBaseline = 'middle';
+                                
+                                for (let i = 0; i < bucketCount; i++) {
+                                    const y = tableY + i * (tableHeight / bucketCount) + (tableHeight / bucketCount) / 2;
+                                    hashCtx.fillText(i, tableX - 10, y);
+                                }
+                                
+                                // 해시 데이터 추가
+                                hashCtx.textAlign = 'left';
+                                hashCtx.font = '12px Arial';
+                                
+                                const hashData = [
+                                    { key: 'name', value: 'John', bucket: 0 },
+                                    { key: 'age', value: '25', bucket: 1 },
+                                    { key: 'email', value: 'john@example.com', bucket: 2 },
+                                    { key: 'city', value: 'New York', bucket: 2 },
+                                    { key: 'country', value: 'USA', bucket: 3 },
+                                    { key: 'job', value: 'Developer', bucket: 5 }
+                                ];
+                                
+                                hashData.forEach(item => {
+                                    const y = tableY + item.bucket * (tableHeight / bucketCount) + (tableHeight / bucketCount) / 2;
+                                    hashCtx.fillText(`${item.key}: ${item.value}`, tableX + 10, y);
+                                });
+                                
+                                // 범례 추가
+                                hashCtx.textAlign = 'center';
+                                hashCtx.fillText('해시 테이블', tableX + tableWidth / 2, tableY + tableHeight + 20);
+                            </script>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">해시 테이블 작동 방식</h3>
+                            <ol class="list-decimal list-inside space-y-1">
+                                <li><strong>해시 함수</strong>: 키를 해시 값(숫자)으로 변환</li>
+                                <li><strong>인덱스 계산</strong>: 해시 값을 배열 크기로 나눈 나머지를 인덱스로 사용</li>
+                                <li><strong>값 저장</strong>: 계산된 인덱스 위치에 키-값 쌍 저장</li>
+                                <li><strong>접근</strong>: 같은 해시 함수로 키의 인덱스를 계산하여 값에 접근</li>
+                            </ol>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">충돌 해결 방법</h3>
+                            <p>여러 키가 같은 인덱스로 해싱될 때 충돌이 발생합니다. 다음은 주요 충돌 해결 기법입니다:</p>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>체이닝(Chaining)</strong>: 같은 인덱스에 모든 항목을 연결 리스트로 저장</li>
+                                <li><strong>개방 주소법(Open Addressing)</strong>: 충돌 시 다른 빈 슬롯을 찾아 저장
+                                    <ul class="list-disc list-inside ml-6 mt-1">
+                                        <li><strong>선형 탐색(Linear Probing)</strong>: 다음 슬롯을 순차적으로 검사</li>
+                                        <li><strong>이차 탐색(Quadratic Probing)</strong>: 제곱수만큼 건너뛰어 검사</li>
+                                        <li><strong>이중 해싱(Double Hashing)</strong>: 두 번째 해시 함수를 이용해 건너뛸 거리 계산</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">주요 연산 및 시간 복잡도</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>삽입(Insert)</strong>: O(1) - 평균적인 경우</li>
+                                <li><strong>검색(Search)</strong>: O(1) - 평균적인 경우</li>
+                                <li><strong>삭제(Delete)</strong>: O(1) - 평균적인 경우</li>
+                                <li>최악의 경우(모든 키가 같은 인덱스로 해싱): O(n)</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">장점과 단점</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-medium text-green-600 dark:text-green-400 mb-2">장점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>빠른 검색, 삽입, 삭제 (평균 O(1))</li>
+                                        <li>키-값 쌍 형태로 데이터 관리</li>
+                                        <li>동적 크기 조정 가능</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-red-600 dark:text-red-400 mb-2">단점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>좋은 해시 함수 설계가 필요</li>
+                                        <li>충돌 처리 오버헤드</li>
+                                        <li>해시 테이블 크기 재조정 비용</li>
+                                        <li>순서가 보장되지 않음</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">구현 예시</h3>
+                            <pre><code class="language-javascript">class HashTable {
+    constructor(size = 53) {
+        this.keyMap = new Array(size);
+    }
+    
+    // 간단한 해시 함수
+    _hash(key) {
+        let total = 0;
+        let WEIRD_PRIME = 31;
+        for (let i = 0; i < Math.min(key.length, 100); i++) {
+            let char = key[i];
+            let value = char.charCodeAt(0) - 96;
+            total = (total * WEIRD_PRIME + value) % this.keyMap.length;
+        }
+        return total;
+    }
+    
+    // 키-값 쌍 설정
+    set(key, value) {
+        let index = this._hash(key);
+        if (!this.keyMap[index]) {
+            this.keyMap[index] = [];
+        }
+        
+        // 중복 키 확인 및 업데이트
+        for (let i = 0; i < this.keyMap[index].length; i++) {
+            if (this.keyMap[index][i][0] === key) {
+                this.keyMap[index][i][1] = value;
+                return;
+            }
+        }
+        
+        this.keyMap[index].push([key, value]);
+    }
+    
+    // 키로 값 가져오기
+    get(key) {
+        let index = this._hash(key);
+        if (this.keyMap[index]) {
+            for (let i = 0; i < this.keyMap[index].length; i++) {
+                if (this.keyMap[index][i][0] === key) {
+                    return this.keyMap[index][i][1];
+                }
+            }
+        }
+        return undefined;
+    }
+    
+    // 모든 키 가져오기
+    keys() {
+        let keysArr = [];
+        for (let i = 0; i < this.keyMap.length; i++) {
+            if (this.keyMap[i]) {
+                for (let j = 0; j < this.keyMap[i].length; j++) {
+                    keysArr.push(this.keyMap[i][j][0]);
+                }
+            }
+        }
+        return keysArr;
+    }
+    
+    // 모든 값 가져오기
+    values() {
+        let valuesArr = [];
+        for (let i = 0; i < this.keyMap.length; i++) {
+            if (this.keyMap[i]) {
+                for (let j = 0; j < this.keyMap[i].length; j++) {
+                    if (!valuesArr.includes(this.keyMap[i][j][1])) {
+                        valuesArr.push(this.keyMap[i][j][1]);
+                    }
+                }
+            }
+        }
+        return valuesArr;
+    }
+}</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">실제 사용 사례</h3>
+                            <ul class="list-disc list-inside">
+                                <li>데이터베이스 인덱싱</li>
+                                <li>캐시 구현 (브라우저 캐시, DNS 캐싱)</li>
+                                <li>사전 및 집합 구현 (JavaScript의 Map, Set)</li>
+                                <li>중복 제거</li>
+                                <li>암호화 및 보안 (해시 함수)</li>
+                                <li>컴파일러의 심볼 테이블</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 힙 -->
+                <section id="heap" class="mb-12">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">힙 (Heap)</h2>
+                    <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">정의</h3>
+                            <p>힙은 완전 이진 트리(Complete Binary Tree) 구조를 가지며, 부모 노드와 자식 노드 간의 대소 관계가 일정하게 유지되는 자료구조입니다. 주로 우선순위 큐를 구현하는 데 사용됩니다.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">시각화</h3>
+                            <div class="flex justify-center my-4">
+                                <canvas id="heap-canvas" width="300" height="200"></canvas>
+                            </div>
+                            <script>
+                                // 힙 시각화
+                                const heapCanvas = document.getElementById('heap-canvas');
+                                const heapCtx = heapCanvas.getContext('2d');
+                                const isHeapDarkMode = document.documentElement.classList.contains('dark');
+                                
+                                // 텍스트 색상 설정
+                                heapCtx.fillStyle = isHeapDarkMode ? '#FFFFFF' : '#000000';
+                                
+                                // 노드 그리기
+                                function drawHeapNode(x, y, value) {
+                                    heapCtx.beginPath();
+                                    heapCtx.arc(x, y, 20, 0, Math.PI * 2);
+                                    heapCtx.strokeStyle = '#5D5CDE';
+                                    heapCtx.stroke();
+                                    heapCtx.fillStyle = isHeapDarkMode ? '#FFFFFF' : '#000000';
+                                    heapCtx.font = '14px Arial';
+                                    heapCtx.textAlign = 'center';
+                                    heapCtx.textBaseline = 'middle';
+                                    heapCtx.fillText(value, x, y);
+                                }
+                                
+                                // 선 그리기
+                                function drawHeapLine(x1, y1, x2, y2) {
+                                    heapCtx.beginPath();
+                                    heapCtx.moveTo(x1, y1);
+                                    heapCtx.lineTo(x2, y2);
+                                    heapCtx.strokeStyle = '#5D5CDE';
+                                    heapCtx.stroke();
+                                }
+                                
+                                // 최대 힙 시각화 (Max Heap)
+                                const centerX = 150;
+                                const topY = 30;
+                                
+                                // 루트 노드
+                                drawHeapNode(centerX, topY, 100);
+                                
+                                // 레벨 1
+                                drawHeapLine(centerX - 15, topY + 15, centerX - 60, topY + 45);
+                                drawHeapNode(centerX - 70, topY + 60, 60);
+                                
+                                drawHeapLine(centerX + 15, topY + 15, centerX + 60, topY + 45);
+                                drawHeapNode(centerX + 70, topY + 60, 80);
+                                
+                                // 레벨 2
+                                drawHeapLine(centerX - 85, topY + 75, centerX - 100, topY + 105);
+                                drawHeapNode(centerX - 110, topY + 120, 40);
+                                
+                                drawHeapLine(centerX - 55, topY + 75, centerX - 40, topY + 105);
+                                drawHeapNode(centerX - 30, topY + 120, 30);
+                                
+                                drawHeapLine(centerX + 55, topY + 75, centerX + 40, topY + 105);
+                                drawHeapNode(centerX + 30, topY + 120, 50);
+                                
+                                drawHeapLine(centerX + 85, topY + 75, centerX + 100, topY + 105);
+                                drawHeapNode(centerX + 110, topY + 120, 70);
+                                
+                                // 라벨 추가
+                                heapCtx.fillStyle = isHeapDarkMode ? '#FFFFFF' : '#000000';
+                                heapCtx.font = '14px Arial';
+                                heapCtx.textAlign = 'center';
+                                heapCtx.fillText('최대 힙 (Max Heap)', centerX, topY + 160);
+                            </script>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">힙의 종류</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>최대 힙(Max Heap)</strong>: 부모 노드가 자식 노드보다 크거나 같음</li>
+                                <li><strong>최소 힙(Min Heap)</strong>: 부모 노드가 자식 노드보다 작거나 같음</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">힙의 특성</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>완전 이진 트리</strong>: 마지막 레벨을 제외하고 모든 레벨이 채워져 있으며, 마지막 레벨은 왼쪽부터 차례대로 채워짐</li>
+                                <li><strong>힙 속성</strong>: 각 노드와 그 자식 노드 간의 대소 관계가 일정하게 유지됨</li>
+                                <li><strong>배열 표현</strong>: 배열로 효율적으로 구현 가능 (부모와 자식 노드 간 인덱스 관계가 명확)</li>
+                                <li><strong>인덱스 관계</strong>:
+                                    <ul class="list-disc list-inside ml-6 mt-1">
+                                        <li>부모 노드 인덱스: Math.floor((i-1)/2)</li>
+                                        <li>왼쪽 자식 노드 인덱스: 2*i + 1</li>
+                                        <li>오른쪽 자식 노드 인덱스: 2*i + 2</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">주요 연산 및 시간 복잡도</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>삽입(Insert)</strong>: O(log n) - 값을 추가하고 힙 속성 유지</li>
+                                <li><strong>추출(Extract)</strong>: O(log n) - 최대값(최소값) 추출 후 힙 속성 유지</li>
+                                <li><strong>조회(Peek)</strong>: O(1) - 최대값(최소값) 확인</li>
+                                <li><strong>힙 구성(Heapify)</strong>: O(n) - 배열을 힙으로 재구성</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">장점과 단점</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-medium text-green-600 dark:text-green-400 mb-2">장점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>최대값/최소값 빠르게 접근 (O(1))</li>
+                                        <li>삽입과 삭제가 효율적 (O(log n))</li>
+                                        <li>메모리 사용이 효율적</li>
+                                        <li>우선순위 큐 구현에 적합</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-red-600 dark:text-red-400 mb-2">단점</h4>
+                                    <ul class="list-disc list-inside">
+                                        <li>특정 값 검색이 비효율적 (O(n))</li>
+                                        <li>최대/최소값 외의 값 찾기가 어려움</li>
+                                        <li>구현이 복잡할 수 있음</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold mb-2">구현 예시 (최소 힙)</h3>
+                            <pre><code class="language-java">public class MinHeap {
+    private int[] heap;
+    private int size;
+    private int capacity;
+    
+    public MinHeap(int capacity) {
+        this.capacity = capacity;
+        this.size = 0;
+        this.heap = new int[capacity];
+    }
+    
+    // 노드 인덱스 관계 계산
+    private int getParentIndex(int index) {
+        return (index - 1) / 2;
+    }
+    
+    private int getLeftChildIndex(int index) {
+        return 2 * index + 1;
+    }
+    
+    private int getRightChildIndex(int index) {
+        return 2 * index + 2;
+    }
+    
+    // 노드가 리프 노드인지 확인
+    private boolean isLeaf(int index) {
+        return index >= size / 2 && index < size;
+    }
+    
+    // 두 노드 위치 교환
+    private void swap(int i, int j) {
+        int temp = heap[i];
+        heap[i] = heap[j];
+        heap[j] = temp;
+    }
+    
+    // 힙 크기 확장
+    private void ensureCapacity() {
+        if (size == capacity) {
+            int[] newHeap = new int[capacity * 2];
+            System.arraycopy(heap, 0, newHeap, 0, capacity);
+            heap = newHeap;
+            capacity *= 2;
+        }
+    }
+    
+    // 값 삽입
+    public void insert(int value) {
+        ensureCapacity();
+        
+        // 마지막 위치에 새 요소 추가
+        heap[size] = value;
+        int current = size;
+        size++;
+        
+        // 힙 속성 유지 (상향식)
+        while (current > 0 && heap[current] < heap[getParentIndex(current)]) {
+            swap(current, getParentIndex(current));
+            current = getParentIndex(current);
+        }
+    }
+    
+    // 최소값 추출
+    public int extractMin() {
+        if (size <= 0) {
+            throw new IllegalStateException("Heap is empty");
+        }
+        
+        if (size == 1) {
+            size--;
+            return heap[0];
+        }
+        
+        // 루트 값 저장
+        int min = heap[0];
+        
+        // 마지막 요소를 루트로 이동
+        heap[0] = heap[size - 1];
+        size--;
+        
+        // 힙 속성 복원
+        heapify(0);
+        
+        return min;
+    }
+    
+    // 특정 노드부터 힙 속성 복원 (하향식)
+    private void heapify(int index) {
+        if (isLeaf(index)) {
+            return;
+        }
+        
+        int leftChildIdx = getLeftChildIndex(index);
+        int rightChildIdx = getRightChildIndex(index);
+        int smallestIdx = index;
+        
+        // 왼쪽 자식이 더 작은 경우
+        if (leftChildIdx < size && heap[leftChildIdx] < heap[smallestIdx]) {
+            smallestIdx = leftChildIdx;
+        }
+        
+        // 오른쪽 자식이 더 작은 경우
+        if (rightChildIdx < size && heap[rightChildIdx] < heap[smallestIdx]) {
+            smallestIdx = rightChildIdx;
+        }
+        
+        // 현재 노드가 자식보다 크면 교환하고 재귀적으로 heapify 수행
+        if (smallestIdx != index) {
+            swap(index, smallestIdx);
+            heapify(smallestIdx);
+        }
+    }
+    
+    // 전체 배열을 힙으로 구성
+    public void buildHeap(int[] arr) {
+        if (arr.length > capacity) {
+            heap = new int[arr.length];
+            capacity = arr.length;
+        }
+        
+        size = arr.length;
+        System.arraycopy(arr, 0, heap, 0, arr.length);
+        
+        // 마지막 비리프 노드부터 루트까지 힙 속성 복원
+        for (int i = size / 2 - 1; i >= 0; i--) {
+            heapify(i);
+        }
+    }
+    
+    // 최소값 확인 (제거하지 않음)
+    public int peek() {
+        if (size <= 0) {
+            throw new IllegalStateException("Heap is empty");
+        }
+        return heap[0];
+    }
+    
+    // 힙이 비어있는지 확인
+    public boolean isEmpty() {
+        return size == 0;
+    }
+    
+    // 힙 크기 확인
+    public int size() {
+        return size;
+    }
+    
+    // 힙 출력
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < size; i++) {
+            sb.append(heap[i]);
+            if (i < size - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+    
+    // 사용 예시
+    public static void main(String[] args) {
+        MinHeap minHeap = new MinHeap(10);
+        
+        // 값 삽입
+        minHeap.insert(5);
+        minHeap.insert(3);
+        minHeap.insert(8);
+        minHeap.insert(1);
+        minHeap.insert(10);
+        minHeap.insert(7);
+        
+        System.out.println("최소 힙: " + minHeap);
+        System.out.println("최소값: " + minHeap.peek());
+        
+        // 최소값 추출
+        System.out.println("추출한 최소값: " + minHeap.extractMin());
+        System.out.println("추출 후 힙: " + minHeap);
+        
+        // 기존 배열로 힙 구성
+        int[] arr = {9, 4, 7, 1, 3, 2, 5};
+        minHeap.buildHeap(arr);
+        System.out.println("배열로 구성한 힙: " + minHeap);
+        
+        // 힙 정렬 (오름차순)
+        System.out.print("힙 정렬 결과: ");
+        int size = minHeap.size();
+        for (int i = 0; i < size; i++) {
+            System.out.print(minHeap.extractMin() + " ");
+        }
+    }
+}</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">실제 사용 사례</h3>
+                            <ul class="list-disc list-inside">
+                                <li>우선순위 큐 구현</li>
+                                <li>힙 정렬 알고리즘</li>
+                                <li>그래프 알고리즘 (다익스트라, 프림)</li>
+                                <li>K번째 큰(작은) 요소 찾기</li>
+                                <li>작업 스케줄링</li>
+                                <li>메모리 관리 (동적 메모리 할당)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    <script>
+        // 사이드바 토글 기능
+        const tocButton = document.getElementById('tocButton');
+        const sidebar = document.getElementById('sidebar');
+        
+        tocButton.addEventListener('click', () => {
+            sidebar.classList.toggle('hidden');
+        });
+        
+        // TOC 링크 클릭 시 사이드바 닫기 (모바일) 및 스크롤 동작
+        const tocLinks = document.querySelectorAll('#toc a');
+        
+        tocLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                // 기본 클릭 동작 방지
+                e.preventDefault();
+                
+                // 타겟 섹션 가져오기
+                const targetId = link.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                
+                // 타겟 섹션으로 스크롤
+                if (targetSection) {
+                    // 헤더 높이 고려해서 약간 위로 스크롤
+                    const headerOffset = 80;
+                    const targetPosition = targetSection.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 모바일에서는 사이드바 닫기
+                    if (window.innerWidth < 768) {
+                        sidebar.classList.add('hidden');
+                    }
+                }
+            });
+        });
+        
+        // 스크롤 시 현재 섹션 강조
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('#toc a');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('bg-gray-100', 'dark:bg-gray-800', 'text-primary', 'font-medium');
+                
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('bg-gray-100', 'dark:bg-gray-800', 'text-primary', 'font-medium');
+                }
+            });
+        });
+    </script>
+    <footer class="bg-white dark:bg-gray-800 shadow-md mt-8 py-6">
+        <div class="container mx-auto px-4">
+            <p class="text-center text-gray-600 dark:text-gray-400 text-sm">
+                모든 자료들은 상업적 이용이 불가합니다.
+                <a
+                    href="https://github.com/Metronon"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center hover:text-gray-800 dark:hover:text-white text-sm"
+                >
+                    <!-- GitHub SVG 아이콘 -->
+                    <svg
+                        class="w-5 h-5 mr-1 inline-block align-middle"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.66-.22.66-.48 
+                    0-.46-.01-1.96-.02-3.84-2.78.61-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 
+                    1.01.07 1.54 1.04 1.54 1.04.9 1.54 2.36 1.09 2.94.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.95 
+                    0-1.09.39-1.99 1.03-2.7-.1-.25-.45-1.28.1-2.67 0 0 .84-.27 2.75 1.02A9.65 9.65 0 0 1 12 6.8c.85.004 1.71.115 
+                    2.5.337 1.91-1.29 2.75-1.02 2.75-1.02.55 1.39.2 2.42.1 2.67.64.71 1.03 1.61 1.03 2.7 0 3.85-2.34 4.7-4.57 4.95.37.32.7.95.7 
+                    1.92 0 1.38-.01 2.5-.01 2.84 0 .26.17.58.67.48A10.01 10.01 0 0 0 22 12c0-5.52-4.48-10-10-10z"
+                        />
+                    </svg>
+                    Metronon
+                </a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
