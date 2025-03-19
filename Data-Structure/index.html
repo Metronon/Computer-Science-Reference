@@ -1124,36 +1124,36 @@ public class Queue<T> {
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">시각화</h3>
-                            <div class="flex justify-center my-4">
-                                <div id="tree-visual" class="tree-node">
-                                    <div class="tree-node-item">A</div>
-                                    <div class="tree-children">
-                                        <div class="tree-branch"></div>
-                                        <div class="tree-node">
-                                            <div class="tree-node-item">B</div>
-                                            <div class="tree-children">
-                                                <div class="tree-branch"></div>
-                                                <div class="tree-node">
-                                                    <div class="tree-node-item">D</div>
-                                                </div>
-                                                <div class="tree-node">
-                                                    <div class="tree-node-item">E</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tree-node">
-                                            <div class="tree-node-item">C</div>
-                                            <div class="tree-children">
-                                                <div class="tree-branch"></div>
-                                                <div class="tree-node">
-                                                    <div class="tree-node-item">F</div>
-                                                </div>
-                                            </div>
-                                        </div>
+                            <!-- 트리 (Tree) 시각화 -->
+                            <div class="tree-visualization my-6">
+                                <div class="flex justify-center">
+                                    <div class="relative w-80 h-64">
+                                        <!-- SVG로 연결선 그리기 -->
+                                        <svg class="absolute top-0 left-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                            <!-- A에서 B로 연결 -->
+                                            <line x1="50%" y1="12" x2="30%" y2="76" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- A에서 C로 연결 -->
+                                            <line x1="50%" y1="12" x2="70%" y2="76" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- B에서 D로 연결 -->
+                                            <line x1="30%" y1="88" x2="20%" y2="152" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- B에서 E로 연결 -->
+                                            <line x1="30%" y1="88" x2="40%" y2="152" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- C에서 F로 연결 -->
+                                            <line x1="70%" y1="88" x2="60%" y2="152" stroke="#5D5CDE" stroke-width="2" />
+                                        </svg>
+
+                                        <!-- Tree nodes -->
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-0 left-1/2 transform -translate-x-1/2">A</div>
+
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-16 left-[30%] transform -translate-x-1/2">B</div>
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-16 left-[70%] transform -translate-x-1/2">C</div>
+
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-36 left-[20%] transform -translate-x-1/2">D</div>
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-36 left-[40%] transform -translate-x-1/2">E</div>
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-36 left-[60%] transform -translate-x-1/2">F</div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">트리 용어</h3>
@@ -1289,70 +1289,46 @@ class BinaryTree {
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">시각화</h3>
-                            <div class="flex justify-center my-4">
-                                <canvas id="bst-canvas" width="300" height="200"></canvas>
+                            <!-- 이진 검색 트리 (BST) 시각화 -->
+                            <div class="bst-visualization my-6">
+                                <div class="flex justify-center">
+                                    <div class="relative w-80 h-80">
+                                        <!-- SVG로 연결선 그리기 -->
+                                        <svg class="absolute top-0 left-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                            <!-- 8에서 3으로 연결 -->
+                                            <line x1="50%" y1="12" x2="30%" y2="76" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- 8에서 10으로 연결 -->
+                                            <line x1="50%" y1="12" x2="70%" y2="76" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- 3에서 1로 연결 -->
+                                            <line x1="30%" y1="88" x2="20%" y2="152" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- 3에서 6으로 연결 -->
+                                            <line x1="30%" y1="88" x2="40%" y2="152" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- 10에서 14로 연결 -->
+                                            <line x1="70%" y1="88" x2="80%" y2="152" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- 6에서 4로 연결 -->
+                                            <line x1="40%" y1="164" x2="35%" y2="228" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- 6에서 7로 연결 -->
+                                            <line x1="40%" y1="164" x2="45%" y2="228" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- 14에서 13으로 연결 -->
+                                            <line x1="80%" y1="164" x2="75%" y2="228" stroke="#5D5CDE" stroke-width="2" />
+                                        </svg>
+
+                                        <!-- Tree nodes -->
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-0 left-1/2 transform -translate-x-1/2">8</div>
+
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-16 left-[30%] transform -translate-x-1/2">3</div>
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-16 left-[70%] transform -translate-x-1/2">10</div>
+
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-36 left-[20%] transform -translate-x-1/2">1</div>
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-36 left-[40%] transform -translate-x-1/2">6</div>
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-36 left-[80%] transform -translate-x-1/2">14</div>
+
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-56 left-[35%] transform -translate-x-1/2">4</div>
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-56 left-[45%] transform -translate-x-1/2">7</div>
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-56 left-[75%] transform -translate-x-1/2">13</div>
+                                    </div>
+                                </div>
                             </div>
-                            <script>
-                                // 이진 검색 트리 시각화
-                                const canvas = document.getElementById('bst-canvas');
-                                const ctx = canvas.getContext('2d');
-                                const isDarkMode = document.documentElement.classList.contains('dark');
-                                
-                                // 텍스트 색상 설정
-                                ctx.fillStyle = isDarkMode ? '#FFFFFF' : '#000000';
-                                
-                                // 트리 그리기
-                                ctx.font = '14px Arial';
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'middle';
-                                
-                                // 노드 그리기
-                                function drawNode(x, y, value) {
-                                    ctx.beginPath();
-                                    ctx.arc(x, y, 20, 0, Math.PI * 2);
-                                    ctx.strokeStyle = '#5D5CDE';
-                                    ctx.stroke();
-                                    ctx.fillStyle = isDarkMode ? '#FFFFFF' : '#000000';
-                                    ctx.fillText(value, x, y);
-                                }
-                                
-                                // 선 그리기
-                                function drawLine(x1, y1, x2, y2) {
-                                    ctx.beginPath();
-                                    ctx.moveTo(x1, y1);
-                                    ctx.lineTo(x2, y2);
-                                    ctx.strokeStyle = '#5D5CDE';
-                                    ctx.stroke();
-                                }
-                                
-                                // BST 시각화
-                                const centerX = 150;
-                                const topY = 30;
-                                
-                                // 루트 노드 (8)
-                                drawNode(centerX, topY, 8);
-                                
-                                // 왼쪽 서브트리
-                                drawLine(centerX - 15, topY + 15, centerX - 60, topY + 45);
-                                drawNode(centerX - 70, topY + 60, 3);
-                                
-                                drawLine(centerX - 85, topY + 75, centerX - 100, topY + 105);
-                                drawNode(centerX - 110, topY + 120, 1);
-                                
-                                drawLine(centerX - 55, topY + 75, centerX - 40, topY + 105);
-                                drawNode(centerX - 30, topY + 120, 6);
-                                
-                                // 오른쪽 서브트리
-                                drawLine(centerX + 15, topY + 15, centerX + 60, topY + 45);
-                                drawNode(centerX + 70, topY + 60, 10);
-                                
-                                drawLine(centerX + 55, topY + 75, centerX + 40, topY + 105);
-                                drawNode(centerX + 30, topY + 120, 9);
-                                
-                                drawLine(centerX + 85, topY + 75, centerX + 100, topY + 105);
-                                drawNode(centerX + 110, topY + 120, 14);
-                            </script>
-                        </div>
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">주요 연산 및 시간 복잡도</h3>
