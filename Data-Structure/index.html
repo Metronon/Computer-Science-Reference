@@ -1863,75 +1863,46 @@ public class Graph<T> {
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">시각화</h3>
-                            <div class="flex justify-center my-4">
-                                <canvas id="hash-canvas" width="300" height="250"></canvas>
+                            <!-- 해시 테이블 (Hash Table) 시각화 -->
+                            <div class="hash-table-visualization my-6">
+                                <div class="flex justify-center">
+                                    <div class="w-80">
+                                        <div class="flex border-b-2 border-primary py-2">
+                                            <div class="w-1/4 font-bold text-center">인덱스</div>
+                                            <div class="w-3/4 font-bold text-center">값</div>
+                                        </div>
+
+                                        <!-- 해시 테이블 항목 -->
+                                        <div class="flex border-b border-gray-300 dark:border-gray-700 py-2">
+                                            <div class="w-1/4 text-center">0</div>
+                                            <div class="w-3/4 text-center">[["김", "010-1234-5678"]]</div>
+                                        </div>
+                                        <div class="flex border-b border-gray-300 dark:border-gray-700 py-2">
+                                            <div class="w-1/4 text-center">1</div>
+                                            <div class="w-3/4 text-center"></div>
+                                        </div>
+                                        <div class="flex border-b border-gray-300 dark:border-gray-700 py-2">
+                                            <div class="w-1/4 text-center">2</div>
+                                            <div class="w-3/4 text-center">[["이", "010-2345-6789"], ["박", "010-3456-7890"]]</div>
+                                        </div>
+                                        <div class="flex border-b border-gray-300 dark:border-gray-700 py-2">
+                                            <div class="w-1/4 text-center">3</div>
+                                            <div class="w-3/4 text-center"></div>
+                                        </div>
+                                        <div class="flex border-b border-gray-300 dark:border-gray-700 py-2">
+                                            <div class="w-1/4 text-center">4</div>
+                                            <div class="w-3/4 text-center">[["최", "010-4567-8901"]]</div>
+                                        </div>
+
+                                        <!-- 해시 함수 정보 -->
+                                        <div class="mt-4 text-center text-sm">
+                                            <p class="font-semibold">해시 함수: h(key) = key.length % 5</p>
+                                            <p>예) "김" → 인덱스 0, "이" → 인덱스 2</p>
+                                            <p>충돌 해결: 체이닝 (Chaining)</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <script>
-                                // 해시 테이블 시각화
-                                const hashCanvas = document.getElementById('hash-canvas');
-                                const hashCtx = hashCanvas.getContext('2d');
-                                const isHashDarkMode = document.documentElement.classList.contains('dark');
-                                
-                                // 텍스트 색상 설정
-                                hashCtx.fillStyle = isHashDarkMode ? '#FFFFFF' : '#000000';
-                                
-                                // 해시 테이블 배열 그리기
-                                const tableWidth = 200;
-                                const tableHeight = 200;
-                                const bucketHeight = 30;
-                                const bucketCount = 6;
-                                const tableX = 50;
-                                const tableY = 20;
-                                
-                                // 테이블 테두리
-                                hashCtx.beginPath();
-                                hashCtx.rect(tableX, tableY, tableWidth, tableHeight);
-                                hashCtx.strokeStyle = '#5D5CDE';
-                                hashCtx.stroke();
-                                
-                                // 버킷 선 그리기
-                                for (let i = 1; i < bucketCount; i++) {
-                                    const y = tableY + i * (tableHeight / bucketCount);
-                                    hashCtx.beginPath();
-                                    hashCtx.moveTo(tableX, y);
-                                    hashCtx.lineTo(tableX + tableWidth, y);
-                                    hashCtx.strokeStyle = '#5D5CDE';
-                                    hashCtx.stroke();
-                                }
-                                
-                                // 인덱스 레이블 추가
-                                hashCtx.font = '12px Arial';
-                                hashCtx.textAlign = 'right';
-                                hashCtx.textBaseline = 'middle';
-                                
-                                for (let i = 0; i < bucketCount; i++) {
-                                    const y = tableY + i * (tableHeight / bucketCount) + (tableHeight / bucketCount) / 2;
-                                    hashCtx.fillText(i, tableX - 10, y);
-                                }
-                                
-                                // 해시 데이터 추가
-                                hashCtx.textAlign = 'left';
-                                hashCtx.font = '12px Arial';
-                                
-                                const hashData = [
-                                    { key: 'name', value: 'John', bucket: 0 },
-                                    { key: 'age', value: '25', bucket: 1 },
-                                    { key: 'email', value: 'john@example.com', bucket: 2 },
-                                    { key: 'city', value: 'New York', bucket: 2 },
-                                    { key: 'country', value: 'USA', bucket: 3 },
-                                    { key: 'job', value: 'Developer', bucket: 5 }
-                                ];
-                                
-                                hashData.forEach(item => {
-                                    const y = tableY + item.bucket * (tableHeight / bucketCount) + (tableHeight / bucketCount) / 2;
-                                    hashCtx.fillText(`${item.key}: ${item.value}`, tableX + 10, y);
-                                });
-                                
-                                // 범례 추가
-                                hashCtx.textAlign = 'center';
-                                hashCtx.fillText('해시 테이블', tableX + tableWidth / 2, tableY + tableHeight + 20);
-                            </script>
-                        </div>
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">해시 테이블 작동 방식</h3>
@@ -2096,74 +2067,44 @@ public class Graph<T> {
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">시각화</h3>
-                            <div class="flex justify-center my-4">
-                                <canvas id="heap-canvas" width="300" height="200"></canvas>
+                            <!-- 힙 (Heap) 시각화 - 최소 힙 -->
+                            <div class="heap-visualization my-6">
+                                <div class="flex justify-center">
+                                    <div class="relative w-80 h-80">
+                                        <!-- SVG로 연결선 그리기 -->
+                                        <svg class="absolute top-0 left-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                            <!-- 1에서 2로 연결 -->
+                                            <line x1="50%" y1="12" x2="30%" y2="76" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- 1에서 3으로 연결 -->
+                                            <line x1="50%" y1="12" x2="70%" y2="76" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- 2에서 4로 연결 -->
+                                            <line x1="30%" y1="88" x2="20%" y2="152" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- 2에서 5로 연결 -->
+                                            <line x1="30%" y1="88" x2="40%" y2="152" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- 3에서 6으로 연결 -->
+                                            <line x1="70%" y1="88" x2="60%" y2="152" stroke="#5D5CDE" stroke-width="2" />
+                                            <!-- 3에서 7로 연결 -->
+                                            <line x1="70%" y1="88" x2="80%" y2="152" stroke="#5D5CDE" stroke-width="2" />
+                                        </svg>
+
+                                        <!-- Heap nodes -->
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-0 left-1/2 transform -translate-x-1/2">1</div>
+
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-16 left-[30%] transform -translate-x-1/2">2</div>
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-16 left-[70%] transform -translate-x-1/2">3</div>
+
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-36 left-[20%] transform -translate-x-1/2">4</div>
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-36 left-[40%] transform -translate-x-1/2">5</div>
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-36 left-[60%] transform -translate-x-1/2">6</div>
+                                        <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-full font-bold bg-white dark:bg-gray-800 absolute top-36 left-[80%] transform -translate-x-1/2">7</div>
+
+                                        <div class="absolute bottom-0 left-0 w-full text-center text-sm">
+                                            <p class="font-semibold">최소 힙 (Min Heap)</p>
+                                            <p>모든 부모 노드는 자식 노드보다 값이 작거나 같음</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <script>
-                                // 힙 시각화
-                                const heapCanvas = document.getElementById('heap-canvas');
-                                const heapCtx = heapCanvas.getContext('2d');
-                                const isHeapDarkMode = document.documentElement.classList.contains('dark');
-                                
-                                // 텍스트 색상 설정
-                                heapCtx.fillStyle = isHeapDarkMode ? '#FFFFFF' : '#000000';
-                                
-                                // 노드 그리기
-                                function drawHeapNode(x, y, value) {
-                                    heapCtx.beginPath();
-                                    heapCtx.arc(x, y, 20, 0, Math.PI * 2);
-                                    heapCtx.strokeStyle = '#5D5CDE';
-                                    heapCtx.stroke();
-                                    heapCtx.fillStyle = isHeapDarkMode ? '#FFFFFF' : '#000000';
-                                    heapCtx.font = '14px Arial';
-                                    heapCtx.textAlign = 'center';
-                                    heapCtx.textBaseline = 'middle';
-                                    heapCtx.fillText(value, x, y);
-                                }
-                                
-                                // 선 그리기
-                                function drawHeapLine(x1, y1, x2, y2) {
-                                    heapCtx.beginPath();
-                                    heapCtx.moveTo(x1, y1);
-                                    heapCtx.lineTo(x2, y2);
-                                    heapCtx.strokeStyle = '#5D5CDE';
-                                    heapCtx.stroke();
-                                }
-                                
-                                // 최대 힙 시각화 (Max Heap)
-                                const centerX = 150;
-                                const topY = 30;
-                                
-                                // 루트 노드
-                                drawHeapNode(centerX, topY, 100);
-                                
-                                // 레벨 1
-                                drawHeapLine(centerX - 15, topY + 15, centerX - 60, topY + 45);
-                                drawHeapNode(centerX - 70, topY + 60, 60);
-                                
-                                drawHeapLine(centerX + 15, topY + 15, centerX + 60, topY + 45);
-                                drawHeapNode(centerX + 70, topY + 60, 80);
-                                
-                                // 레벨 2
-                                drawHeapLine(centerX - 85, topY + 75, centerX - 100, topY + 105);
-                                drawHeapNode(centerX - 110, topY + 120, 40);
-                                
-                                drawHeapLine(centerX - 55, topY + 75, centerX - 40, topY + 105);
-                                drawHeapNode(centerX - 30, topY + 120, 30);
-                                
-                                drawHeapLine(centerX + 55, topY + 75, centerX + 40, topY + 105);
-                                drawHeapNode(centerX + 30, topY + 120, 50);
-                                
-                                drawHeapLine(centerX + 85, topY + 75, centerX + 100, topY + 105);
-                                drawHeapNode(centerX + 110, topY + 120, 70);
-                                
-                                // 라벨 추가
-                                heapCtx.fillStyle = isHeapDarkMode ? '#FFFFFF' : '#000000';
-                                heapCtx.font = '14px Arial';
-                                heapCtx.textAlign = 'center';
-                                heapCtx.fillText('최대 힙 (Max Heap)', centerX, topY + 160);
-                            </script>
-                        </div>
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">힙의 종류</h3>
