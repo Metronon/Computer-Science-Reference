@@ -71,6 +71,212 @@
         code {
             font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
         }
+
+        /* 자료 구조 예시를 위한 CSS 설정 */
+        :root {
+            --color-primary: #3490dc; /* 예시: 파란색 계열 */
+          }
+
+        .array-box {
+            width: 3.5rem;          /* w-14 */
+            height: 3.5rem;         /* h-14 */
+            border: 2px solid var(--color-primary); /* border-2 + border-primary */
+            display: flex;          
+            align-items: center;    /* items-center */
+            justify-content: center;/* justify-center */
+            font-size: 1.125rem;    /* text-lg */
+            font-weight: 600;       /* font-semibold */
+            margin: 0.25rem;        /* m-1 */
+          }
+          
+          .linked-list-node {
+            width: 3.5rem;          /* w-14 */
+            height: 3.5rem;         /* h-14 */
+            border-radius: 9999px;  /* rounded-full */
+            border: 2px solid var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;    /* text-lg */
+            font-weight: 600;       /* font-semibold */
+          }
+          
+          .linked-list-arrow {
+            width: 2rem;            /* w-8 */
+            height: 2rem;           /* h-8 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;      /* text-2xl */
+            color: var(--color-primary);  /* text-primary */
+          }
+          
+          .stack-item {
+            width: 100%;            /* w-full */
+            height: 3rem;           /* h-12 (12 * 0.25rem) */
+            border: 2px solid var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;    /* text-lg */
+            font-weight: 600;
+          }
+          
+          .queue-item {
+            width: 3.5rem;          /* w-14 */
+            height: 3.5rem;         /* h-14 */
+            border: 2px solid var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;    /* text-lg */
+            font-weight: 600;
+            margin: 0.25rem;        /* m-1 */
+          }
+          
+          .tree-node {
+            width: 3rem;            /* w-12 */
+            height: 3rem;           /* h-12 */
+            border-radius: 9999px;  /* rounded-full */
+            border: 2px solid var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;    /* text-lg */
+            font-weight: 600;
+            margin-left: 0.25rem;   /* mx-1 */
+            margin-right: 0.25rem;  /* mx-1 */
+          }
+          
+          .code-block {
+            background-color: #f7fafc; /* bg-gray-100 */
+            padding: 1rem;             /* p-4 */
+            border-radius: 0.375rem;     /* rounded-md */
+            overflow-x: auto;          /* overflow-x-auto */
+            font-size: 0.875rem;       /* text-sm */
+          }
+
+                    /* 각 노드를 감싸는 컨테이너 */
+            .node {
+                display: flex;
+                align-items: center;
+                margin: 0.25rem; /* 작은 간격 추가 */
+            }
+            
+            /* 노드 자신 - 원형 테두리와 텍스트 중앙 정렬 */
+            .node-item {
+                width: 3.5rem;          /* Tailwind의 w-14 */
+                height: 3.5rem;         /* h-14 */
+                border-radius: 9999px;  /* rounded-full */
+                border: 2px solid var(--color-primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.125rem;    /* text-lg */
+                font-weight: 600;       /* font-semibold */
+            }
+            
+            /* 노드 사이의 화살표 */
+            .node-arrow {
+                width: 2rem;            /* Tailwind의 w-8 */
+                height: 2rem;           /* h-8 */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;      /* text-2xl */
+                color: var(--color-primary);
+                margin-left: 0.5rem;    /* 노드 아이템과의 간격 */
+            }
+
+            /* 트리 노드 컨테이너 */
+            .tree-node {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            /* 노드 원 (트리 노드 아이템) */
+            .tree-node-item {
+                width: 3rem;                  /* 약 Tailwind의 w-12 */
+                height: 3rem;                 /* h-12 */
+                border: 2px solid var(--color-primary);
+                border-radius: 50%;           /* 원형 */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1rem;              /* 조정 가능 */
+                font-weight: 600;
+                background: #fff;
+                position: relative;
+                z-index: 2;
+            }
+            
+            /* 부모 노드와 자식 노드 사이를 연결하는 수직선 */
+            /* 부모 노드의 자식 컨테이너(.tree-children)가 있을 때, 
+                부모 노드 하단 중앙에서 자식 컨테이너까지 선을 그립니다. */
+            .tree-node > .tree-children::before {
+                content: "";
+                position: absolute;
+                top: -1rem;                   /* 부모 노드 하단부터 시작 (필요시 값 조절) */
+                left: 50%;
+                transform: translateX(-50%);
+                width: 2px;
+                height: 1rem;
+                background: var(--color-primary);
+                z-index: 1;
+            }
+            
+            /* 자식들을 감싸는 컨테이너 */
+            .tree-children {
+                position: relative;
+                display: flex;
+                justify-content: center;
+                margin-top: 1rem;             /* 부모와 자식 사이 간격 */
+            }
+            
+            /* 자식들을 연결하는 수평 브랜치 */
+            /* 이 엘리먼트는 .tree-children 내 첫 번째 자식으로 배치되어,
+                자식 노드들이 있는 가로줄을 그립니다. */
+            .tree-branch {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                border-top: 2px solid var(--color-primary);
+                z-index: 1;
+            }
+            
+            /* 각 자식 노드에서, 수평 브랜치와 노드 사이를 잇는 수직선 */
+            /* .tree-children 내부에 있는 각 .tree-node의 .tree-node-item 위에 수직선을 추가 */
+            .tree-children > .tree-node .tree-node-item::before {
+                content: "";
+                position: absolute;
+                top: -1rem;                   /* 수평 브랜치와의 간격 */
+                left: 50%;
+                transform: translateX(-50%);
+                width: 2px;
+                height: 1rem;
+                background: var(--color-primary);
+                z-index: -1;
+            }
+            
+            /* 자식 노드 간 간격 조정 */
+            .tree-children > .tree-node {
+                margin: 0 0.5rem;
+            }
+            
+            /* 자식 컨테이너가 비어 있다면 안 보이게 */
+            .tree-children:empty {
+                display: none;
+            }
+          
+          /* 다크 모드를 고려하는 경우 (사용자 OS 설정보다 dark가 우선) */
+          @media (prefers-color-scheme: dark) {
+            .code-block {
+              background-color: #2d3748;  /* dark:bg-gray-800: Tailwind 기본값 */
+            }
+          }
     </style>
 </head>
 <body class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-200">
@@ -148,15 +354,30 @@
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">시각화</h3>
-                            <div id="array-visual" class="my-4 flex justify-center">
-                                <div class="array-box">10</div>
-                                <div class="array-box">20</div>
-                                <div class="array-box">30</div>
-                                <div class="array-box">40</div>
-                                <div class="array-box">50</div>
+                            <!-- 배열 (Array) 시각화 -->
+                            <div class="array-visualization my-6">
+                                <div class="flex justify-center">
+                                    <div class="flex flex-col">
+                                        <div class="flex">
+                                            <!-- 배열 요소들 -->
+                                            <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-md m-1 font-bold bg-white dark:bg-gray-800">10</div>
+                                            <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-md m-1 font-bold bg-white dark:bg-gray-800">20</div>
+                                            <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-md m-1 font-bold bg-white dark:bg-gray-800">30</div>
+                                            <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-md m-1 font-bold bg-white dark:bg-gray-800">40</div>
+                                            <div class="w-12 h-12 flex items-center justify-center border-2 border-primary rounded-md m-1 font-bold bg-white dark:bg-gray-800">50</div>
+                                        </div>
+                                        <div class="flex mt-1">
+                                            <!-- 인덱스 표시 -->
+                                            <div class="w-12 h-6 flex items-center justify-center text-sm m-1">0</div>
+                                            <div class="w-12 h-6 flex items-center justify-center text-sm m-1">1</div>
+                                            <div class="w-12 h-6 flex items-center justify-center text-sm m-1">2</div>
+                                            <div class="w-12 h-6 flex items-center justify-center text-sm m-1">3</div>
+                                            <div class="w-12 h-6 flex items-center justify-center text-sm m-1">4</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-2 text-sm">인덱스: 0, 1, 2, 3, 4</div>
                             </div>
-                            <p class="text-center text-sm text-gray-600 dark:text-gray-400 mb-4">인덱스: 0, 1, 2, 3, 4</p>
-                        </div>
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">주요 연산 및 시간 복잡도</h3>
@@ -267,29 +488,56 @@ public class ArrayExample {
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">시각화</h3>
-                            <div id="linkedlist-visual" class="my-4 flex justify-center flex-wrap">
-                                <div class="node">
-                                    <div class="node-item">10</div>
-                                    <div class="node-arrow">→</div>
-                                </div>
-                                <div class="node">
-                                    <div class="node-item">20</div>
-                                    <div class="node-arrow">→</div>
-                                </div>
-                                <div class="node">
-                                    <div class="node-item">30</div>
-                                    <div class="node-arrow">→</div>
-                                </div>
-                                <div class="node">
-                                    <div class="node-item">40</div>
-                                    <div class="node-arrow">→</div>
-                                </div>
-                                <div class="node">
-                                    <div class="node-item">50</div>
-                                    <div class="node-arrow">⌀</div>
+                            <!-- 연결 리스트 (Linked List) 시각화 -->
+                            <div class="linked-list-visualization my-6">
+                                <div class="flex flex-wrap justify-center items-center">
+                                    <!-- 노드 1 -->
+                                    <div class="flex items-center">
+                                        <div class="w-14 h-14 flex items-center justify-center border-2 border-primary rounded-md m-1 font-bold bg-white dark:bg-gray-800">10</div>
+                                        <div class="w-8 h-8 flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- 노드 2 -->
+                                    <div class="flex items-center">
+                                        <div class="w-14 h-14 flex items-center justify-center border-2 border-primary rounded-md m-1 font-bold bg-white dark:bg-gray-800">20</div>
+                                        <div class="w-8 h-8 flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- 노드 3 -->
+                                    <div class="flex items-center">
+                                        <div class="w-14 h-14 flex items-center justify-center border-2 border-primary rounded-md m-1 font-bold bg-white dark:bg-gray-800">30</div>
+                                        <div class="w-8 h-8 flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- 노드 4 -->
+                                    <div class="flex items-center">
+                                        <div class="w-14 h-14 flex items-center justify-center border-2 border-primary rounded-md m-1 font-bold bg-white dark:bg-gray-800">40</div>
+                                        <div class="w-8 h-8 flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- 노드 5 -->
+                                    <div class="flex items-center">
+                                        <div class="w-14 h-14 flex items-center justify-center border-2 border-primary rounded-md m-1 font-bold bg-white dark:bg-gray-800">50</div>
+                                        <div class="w-8 h-8 flex items-center justify-center font-bold text-lg">⌀</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">주요 연산 및 시간 복잡도</h3>
@@ -440,16 +688,23 @@ public class LinkedList {
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">시각화</h3>
+                            <div class="flex justify-center space-x-5 text-sm text-gray-600 dark:text-gray-400">
+                                <div>요소 제거 ⬉</div>
+                                <div>⬋ 요소 추가</div>
+                            </div>
                             <div class="flex justify-center my-4">
-                                <div id="stack-visual" class="flex flex-col-reverse">
-                                    <div class="stack-item">A</div>
-                                    <div class="stack-item">B</div>
-                                    <div class="stack-item">C</div>
-                                    <div class="stack-item">D</div>
-                                    <div class="stack-item">E</div>
+                                <div id="queue-visual" class="queue-container">
+                                    <div class="queue-item">E</div>
+                                    <div class="queue-item">D</div>
+                                    <div class="queue-item">C</div>
+                                    <div class="queue-item">B</div>
+                                    <div class="queue-item">A</div>
                                 </div>
                             </div>
-                            <p class="text-center text-sm text-gray-600 dark:text-gray-400">마지막에 추가된 E가 가장 먼저 제거됩니다</p>
+                            <div class="flex justify-center space-x-5 text-sm text-gray-600 dark:text-gray-400">
+                                <div>A B C D E 순서로 삽입</div>
+                                <div>E D C B A 순서로 제거</div>
+                            </div>
                         </div>
 
                         <div class="mb-4">
@@ -615,6 +870,10 @@ public class Stack<T> {
 
                         <div class="mb-4">
                             <h3 class="text-xl font-semibold mb-2">시각화</h3>
+                            <div class="flex justify-center space-x-5 text-sm text-gray-600 dark:text-gray-400">
+                                <div>E D C B A 순서로 추가</div>
+                                <div>⬋ 요소 추가</div>
+                            </div>
                             <div class="flex justify-center my-4">
                                 <div id="queue-visual" class="queue-container">
                                     <div class="queue-item">A</div>
@@ -624,9 +883,9 @@ public class Stack<T> {
                                     <div class="queue-item">E</div>
                                 </div>
                             </div>
-                            <div class="flex justify-center space-x-20 text-sm text-gray-600 dark:text-gray-400">
-                                <div>Dequeue ←</div>
-                                <div>→ Enqueue</div>
+                            <div class="flex justify-center space-x-5 text-sm text-gray-600 dark:text-gray-400">
+                                <div>요소 제거 ⬋</div>
+                                <div>E D C B A 순서로 제거</div>
                             </div>
                         </div>
 
